@@ -1,0 +1,30 @@
+name: 'Container image scan'
+description: 'Scan container images for vulnerabilities and CIS guidelines'
+inputs: 
+  image-name:
+    description: 'Docker image to scan'
+    required: true
+  severity-threshold:
+    description: 'Minimum severities of vulnerabilities to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL)'
+    required: false
+    default: 'HIGH'
+  username:
+    description: 'Username to authenticate to the Docker registry'
+    required: false
+  password:
+    description: 'Password to authenticate to the Docker registry'
+    required: false
+  github-token:
+    description: 'Github token'
+    default: ${{ github.token }}
+  add-CIS-checks:
+    description: 'Add CIS checks to build secure and best pracitce Docker images'
+    default: 'true'
+
+outputs:
+  scan-report:
+    description: 'File name where the scan results are stored'
+
+runs:
+  using: 'node12'
+  main: 'lib/main.js'
