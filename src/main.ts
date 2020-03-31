@@ -68,7 +68,7 @@ async function runTrivy(): Promise<number> {
     console.log("Scanning for vulnerabilties...");
     const trivyToolRunner = new ToolRunner(trivyPath, [imageName], trivyOptions);
     const trivyStatus = await trivyToolRunner.exec();
-    utils.printToolLogs(dockleHelper.getDockleLogPath());
+    utils.printToolLogs(trivyHelper.getTrivyLogPath());
     return trivyStatus;
 }
 
