@@ -60,6 +60,11 @@ export function getOutputPath(): string {
     return trivyOutputPath;
 }
 
+export function getTrivyLogPath(): string {
+    const trivyLogPath = `${fileHelper.getContainerScanDirectory()}/trivylog`;
+    return trivyLogPath;
+}
+
 export function getText(trivyStatus: number): string {
     let clusteredVulnerabilities = '';
     const vulnerabilityIdsBySeverity = getVulnerabilityIdsBySeverity(trivyStatus, true);

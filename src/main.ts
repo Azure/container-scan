@@ -1,5 +1,6 @@
 import * as core from '@actions/core';
 import * as util from 'util';
+import * as fs from 'fs';
 import { ExecOptions } from '@actions/exec/lib/interfaces';
 import { ToolRunner } from '@actions/exec/lib/toolrunner';
 import { GitHubClient } from './githubClient';
@@ -62,11 +63,12 @@ async function runTrivy(): Promise<number> {
     const trivyOptions: ExecOptions = {
         env: trivyEnv,
         ignoreReturnCode: true,
-        silent: true
+        outStream: fs.createWriteStream(trivyHelper.getTrivyLogPath())
     };
     console.log("Scanning for vulnerabilties...");
     const trivyToolRunner = new ToolRunner(trivyPath, [imageName], trivyOptions);
     const trivyStatus = await trivyToolRunner.exec();
+    utils.printToolLogs(dockleHelper.getDockleLogPath());
     return trivyStatus;
 }
 
@@ -79,12 +81,13 @@ async function runDockle(): Promise<number> {
     const dockleOptions: ExecOptions = {
         env: dockleEnv,
         ignoreReturnCode: true,
-        silent: true
+        outStream: fs.createWriteStream(dockleHelper.getDockleLogPath())
     };
     console.log("Scanning for CIS and best practice violations...");
     let dockleArgs = ['-f', 'json', '-o', dockleHelper.getOutputPath(), '--exit-level', dockleHelper.LEVEL_INFO, '--exit-code', dockleHelper.DOCKLE_EXIT_CODE.toString(), imageName];
     const dockleToolRunner = new ToolRunner(docklePath, dockleArgs, dockleOptions);
     const dockleStatus = await dockleToolRunner.exec();
+    utils.printToolLogs(dockleHelper.getDockleLogPath());
     return dockleStatus;
 }
 
@@ -96,6 +99,7 @@ async function run(): Promise<void> {
     } else if (trivyStatus === 0) {
         console.log("No vulnerabilities were detected in the container image");
     } else {
+        utils.extractErrorsFromLogs(trivyHelper.getTrivyLogPath());
         throw new Error("An error occured while scanning the container image for vulnerabilities");
     }
 
@@ -107,6 +111,7 @@ async function run(): Promise<void> {
         } else if (dockleStatus === 0) {
             console.log("No best practice violations were detected in the container image");
         } else {
+            utils.extractErrorsFromLogs(dockleHelper.getDockleLogPath());
             throw new Error("An error occured while scanning the container image for best practice violations");
         }
     }
