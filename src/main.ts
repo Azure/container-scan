@@ -99,7 +99,10 @@ async function run(): Promise<void> {
     } else if (trivyStatus === 0) {
         console.log("No vulnerabilities were detected in the container image");
     } else {
-        utils.extractErrorsFromLogs(trivyHelper.getTrivyLogPath());
+        const errors = utils.extractErrorsFromLogs(trivyHelper.getTrivyLogPath(), trivyHelper.trivyToolName);
+        errors.forEach(err => {
+            core.error(err);
+        });
         throw new Error("An error occured while scanning the container image for vulnerabilities");
     }
 
@@ -111,7 +114,10 @@ async function run(): Promise<void> {
         } else if (dockleStatus === 0) {
             console.log("No best practice violations were detected in the container image");
         } else {
-            utils.extractErrorsFromLogs(dockleHelper.getDockleLogPath());
+            const errors = utils.extractErrorsFromLogs(dockleHelper.getDockleLogPath(), dockleHelper.dockleToolName);
+            errors.forEach(err => {
+                core.error(err);
+            });
             throw new Error("An error occured while scanning the container image for best practice violations");
         }
     }

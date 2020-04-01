@@ -51,16 +51,18 @@ export function getConfigForTable(widths: number[]): any {
   return config;
 }
 
-export function extractErrorsFromLogs(outputPath: string) {
+export function extractErrorsFromLogs(outputPath: string, toolName?: string): any {
   const out = fs.readFileSync(outputPath, 'utf8');
   const lines = out.split('\n');
+  let errors = [];
   lines.forEach((line) => {
     const errIndex = line.indexOf("FATAL");
     if (errIndex >= 0) {
       const err = line.substring(errIndex);
-      core.error(err);
+      errors.push(err);
     }
   });
+  return errors;
 }
 
 export function printToolLogs(outputPath: string) {

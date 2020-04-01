@@ -10,9 +10,9 @@ import * as utils from './utils';
 
 export const DOCKLE_EXIT_CODE = 5;
 export const LEVEL_INFO = "INFO";
+export const dockleToolName = "dockle";
 const stableDockleVersion = "0.2.4";
 const dockleLatestReleaseUrl = "https://api.github.com/repos/goodwithtech/dockle/releases/latest";
-const dockleToolName = "dockle";
 const KEY_DETAILS = "details";
 const KEY_CODE = "code";
 const KEY_TITLE = "title";
