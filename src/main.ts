@@ -120,6 +120,8 @@ async function run(): Promise<void> {
     }
 
     if (trivyStatus == trivyHelper.TRIVY_EXIT_CODE) {
+        utils.createScanReport();
+        core.setOutput('scan-report', utils.getScanReportPath());
         throw new Error("Vulnerabilities were detected in the container image");
     }
 }

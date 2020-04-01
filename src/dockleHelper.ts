@@ -87,6 +87,23 @@ export function getText(dockleStatus: number): string {
     return `**Best Practices Violations** -${clusteredViolations ? clusteredViolations : '\nNone found.'}`;
 }
 
+export function getDockleFilteredOutput(): any {
+    const dockleOutputJson = getDockleOutput();
+    let filteredVulnerabilities = [];
+    dockleOutputJson[KEY_DETAILS].forEach(ele => {
+        if (ele[KEY_LEVEL] != LEVEL_IGNORE) {
+            let vulnObject = {
+                KEY_CODE: ele[KEY_CODE],
+                KEY_TITLE: ele[KEY_TITLE],
+                KEY_LEVEL: ele[KEY_LEVEL],
+                KEY_ALERTS: ele[KEY_ALERTS][0]
+            };
+            filteredVulnerabilities.push(vulnObject);
+        }
+    });
+    return filteredVulnerabilities;
+}
+
 function getLevelsToInclude(): string[] {
     return [LEVEL_FATAL, LEVEL_WARN, LEVEL_INFO];
 }

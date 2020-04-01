@@ -1,7 +1,9 @@
+import * as fs from 'fs';
 import * as dockleHelper from './dockleHelper';
 import * as gitHubHelper from './gitHubHelper';
 import * as inputHelper from './inputHelper';
 import * as trivyHelper from './trivyHelper';
+import * as fileHelper from './fileHelper';
 
 export function getCheckRunPayloadWithScanResult(trivyStatus: number, dockleStatus: number): any {
     const headSha = gitHubHelper.getHeadSha();
@@ -22,6 +24,23 @@ export function getCheckRunPayloadWithScanResult(trivyStatus: number, dockleStat
     }
 
     return checkRunPayload;
+}
+
+export function getScanReportPath(): string {
+  const scanReportPath = `${fileHelper.getContainerScanDirectory()}/scanReport.json`;
+  return scanReportPath;
+}
+
+export function createScanReport() {
+  const scanReportPath = getScanReportPath();
+  const trivyOutput = trivyHelper.getTrivyFilteredOutput();
+  const dockleOutput = dockleHelper.getDockleFilteredOutput();
+  const scanReportObject = {
+    "commonVulnerabilities": trivyOutput,
+    "bestPracticeVulnerabilities": dockleOutput
+  };
+  const output = `{\n\t"commonVulnerabilities": ${trivyOutput},\n\t"bestPracticeVulnerabilities": ${dockleOutput}\n}`;
+  fs.writeFileSync(scanReportPath, JSON.stringify(scanReportObject));
 }
 
 function getCheckConclusion(trivyStatus: number, dockleStatus: number): string {

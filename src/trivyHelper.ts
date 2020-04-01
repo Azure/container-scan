@@ -157,6 +157,21 @@ export function getSeveritiesToInclude(warnIfInvalid?: boolean): string[] {
     return severities;
 }
 
+export function getTrivyFilteredOutput(): any {
+    const vulnerabilities = getVulnerabilities();
+    let filteredVulnerabilities = [];
+    vulnerabilities.forEach((cve: any) => {
+        let vulnObject = {
+            KEY_VULNERABILITY_ID: cve[KEY_VULNERABILITY_ID],
+            KEY_PACKAGE_NAME: cve[KEY_PACKAGE_NAME],
+            KEY_SEVERITY: cve[KEY_SEVERITY],
+            KEY_DESCRIPTION: cve[KEY_DESCRIPTION]
+        };
+        filteredVulnerabilities.push(vulnObject);
+    });
+    return filteredVulnerabilities;
+}
+
 function getVulnerabilityIdsBySeverity(trivyStatus: number, removeDuplicates?: boolean): any {
     const severities = getSeveritiesToInclude();
     let vulnerabilityIdsBySeverity: any = {};
