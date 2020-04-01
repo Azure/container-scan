@@ -40,7 +40,7 @@ export function createScanReport() {
     "bestPracticeVulnerabilities": dockleOutput
   };
   const output = `{\n\t"commonVulnerabilities": ${trivyOutput},\n\t"bestPracticeVulnerabilities": ${dockleOutput}\n}`;
-  fs.writeFileSync(scanReportPath, JSON.stringify(scanReportObject));
+  fs.writeFileSync(scanReportPath, JSON.stringify(scanReportObject, null, 2));
 }
 
 function getCheckConclusion(trivyStatus: number, dockleStatus: number): string {
