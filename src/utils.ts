@@ -26,21 +26,16 @@ export function getCheckRunPayloadWithScanResult(trivyStatus: number, dockleStat
     return checkRunPayload;
 }
 
-export function getScanReportPath(): string {
+export function getScanReport(): string {
   const scanReportPath = `${fileHelper.getContainerScanDirectory()}/scanReport.json`;
-  return scanReportPath;
-}
-
-export function createScanReport() {
-  const scanReportPath = getScanReportPath();
   const trivyOutput = trivyHelper.getTrivyFilteredOutput();
   const dockleOutput = dockleHelper.getDockleFilteredOutput();
   const scanReportObject = {
     "commonVulnerabilities": trivyOutput,
     "bestPracticeVulnerabilities": dockleOutput
   };
-  const output = `{\n\t"commonVulnerabilities": ${trivyOutput},\n\t"bestPracticeVulnerabilities": ${dockleOutput}\n}`;
-  fs.writeFileSync(scanReportPath, JSON.stringify(scanReportObject, null, 2));
+   fs.writeFileSync(scanReportPath, JSON.stringify(scanReportObject, null, 2));
+   return scanReportPath;
 }
 
 function getCheckConclusion(trivyStatus: number, dockleStatus: number): string {

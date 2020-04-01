@@ -162,10 +162,10 @@ export function getTrivyFilteredOutput(): any {
     let filteredVulnerabilities = [];
     vulnerabilities.forEach((cve: any) => {
         let vulnObject = {
-            [KEY_VULNERABILITY_ID]: cve[KEY_VULNERABILITY_ID],
-            [KEY_PACKAGE_NAME]: cve[KEY_PACKAGE_NAME],
-            [KEY_SEVERITY]: cve[KEY_SEVERITY],
-            [KEY_DESCRIPTION]: cve[KEY_DESCRIPTION]
+            "vulnerabilityId": cve[KEY_VULNERABILITY_ID],
+            "packageName": cve[KEY_PACKAGE_NAME],
+            "severity": cve[KEY_SEVERITY],
+            "description": cve[KEY_DESCRIPTION]
         };
         filteredVulnerabilities.push(vulnObject);
     });

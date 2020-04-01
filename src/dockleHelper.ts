@@ -90,13 +90,13 @@ export function getText(dockleStatus: number): string {
 export function getDockleFilteredOutput(): any {
     const dockleOutputJson = getDockleOutput();
     let filteredVulnerabilities = [];
-    dockleOutputJson[KEY_DETAILS].forEach(ele => {
-        if (ele[KEY_LEVEL] != LEVEL_IGNORE) {
+    dockleOutputJson[KEY_DETAILS].forEach(cis => {
+        if (cis[KEY_LEVEL] != LEVEL_IGNORE) {
             let vulnObject = {
-                [KEY_CODE]: ele[KEY_CODE],
-                [KEY_TITLE]: ele[KEY_TITLE],
-                [KEY_LEVEL]: ele[KEY_LEVEL],
-                [KEY_ALERTS]: ele[KEY_ALERTS][0]
+                [KEY_CODE]: cis[KEY_CODE],
+                [KEY_TITLE]: cis[KEY_TITLE],
+                [KEY_LEVEL]: cis[KEY_LEVEL],
+                [KEY_ALERTS]: cis[KEY_ALERTS][0]
             };
             filteredVulnerabilities.push(vulnObject);
         }
