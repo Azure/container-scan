@@ -10,9 +10,9 @@ import * as inputHelper from './inputHelper';
 import * as utils from './utils';
 
 export const TRIVY_EXIT_CODE = 5;
+export const trivyToolName = "trivy";
 const stableTrivyVersion = "0.5.2";
 const trivyLatestReleaseUrl = "https://api.github.com/repos/aquasecurity/trivy/releases/latest";
-const trivyToolName = "trivy";
 const KEY_VULNERABILITIES = "Vulnerabilities";
 const KEY_VULNERABILITY_ID = "VulnerabilityID";
 const KEY_PACKAGE_NAME = "PkgName";
@@ -58,6 +58,11 @@ export async function getTrivy(): Promise<string> {
 export function getOutputPath(): string {
     const trivyOutputPath = `${fileHelper.getContainerScanDirectory()}/trivyoutput.json`;
     return trivyOutputPath;
+}
+
+export function getTrivyLogPath(): string {
+    const trivyLogPath = `${fileHelper.getContainerScanDirectory()}/trivylog`;
+    return trivyLogPath;
 }
 
 export function getText(trivyStatus: number): string {

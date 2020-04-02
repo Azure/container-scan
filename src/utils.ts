@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as core from '@actions/core';
 import * as dockleHelper from './dockleHelper';
 import * as gitHubHelper from './gitHubHelper';
 import * as inputHelper from './inputHelper';
@@ -40,6 +41,50 @@ export function getScanReport(): string {
   return scanReportPath;
 }
 
+export function getConfigForTable(widths: number[]): any {
+  let config = {
+    columns: {
+      0: {
+        width: widths[0],
+        wrapWord: true
+      },
+      1: {
+        width: widths[1],
+        wrapWord: true
+      },
+      2: {
+        width: widths[2],
+        wrapWord: true
+      },
+      3: {
+        width: widths[3],
+        wrapWord: true
+      }
+    }
+  };
+
+  return config;
+}
+
+export function extractErrorsFromLogs(outputPath: string, toolName?: string): any {
+  const out = fs.readFileSync(outputPath, 'utf8');
+  const lines = out.split('\n');
+  let errors = [];
+  lines.forEach((line) => {
+    const errIndex = line.indexOf("FATAL");
+    if (errIndex >= 0) {
+      const err = line.substring(errIndex);
+      errors.push(err);
+    }
+  });
+  return errors;
+}
+
+export function addLogsToDebug(outputPath: string) {
+  const out = fs.readFileSync(outputPath, 'utf8');
+  core.debug(out);
+}
+
 function getCheckConclusion(trivyStatus: number, dockleStatus: number): string {
   const checkConclusion = trivyStatus != 0 ? 'failure' : 'success';
   return checkConclusion;
@@ -69,29 +114,4 @@ function getCheckText(trivyStatus: number, dockleStatus: number): string {
   }
 
   return text;
-}
-
-export function getConfigForTable(widths: number[]): any {
-  let config = {
-    columns: {
-      0: {
-        width: widths[0],
-        wrapWord: true
-      },
-      1: {
-        width: widths[1],
-        wrapWord: true
-      },
-      2: {
-        width: widths[2],
-        wrapWord: true
-      },
-      3: {
-        width: widths[3],
-        wrapWord: true
-      }
-    }
-  };
-
-  return config;
 }
