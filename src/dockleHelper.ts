@@ -92,6 +92,23 @@ export function getText(dockleStatus: number): string {
     return `**Best Practices Violations** -${clusteredViolations ? clusteredViolations : '\nNone found.'}`;
 }
 
+export function getFilteredOutput(): any {
+    const dockleOutputJson = getDockleOutput();
+    let filteredVulnerabilities = [];
+    dockleOutputJson[KEY_DETAILS].forEach(cis => {
+        if (cis[KEY_LEVEL] != LEVEL_IGNORE) {
+            let vulnObject = {
+                [KEY_CODE]: cis[KEY_CODE],
+                [KEY_TITLE]: cis[KEY_TITLE],
+                [KEY_LEVEL]: cis[KEY_LEVEL],
+                [KEY_ALERTS]: cis[KEY_ALERTS][0]
+            };
+            filteredVulnerabilities.push(vulnObject);
+        }
+    });
+    return filteredVulnerabilities;
+}
+
 function getLevelsToInclude(): string[] {
     return [LEVEL_FATAL, LEVEL_WARN, LEVEL_INFO];
 }
@@ -170,13 +187,13 @@ export function printFormattedOutput() {
     let rows = [];
     let titles = [TITLE_VULNERABILITY_ID, TITLE_TITLE, TITLE_SEVERITY, TITLE_DESCRIPTION];
     rows.push(titles);
-    dockleOutputJson[KEY_DETAILS].forEach(ele => {
-        if (ele[KEY_LEVEL] != LEVEL_IGNORE) {
+    dockleOutputJson[KEY_DETAILS].forEach(cis => {
+        if (cis[KEY_LEVEL] != LEVEL_IGNORE) {
             let row = [];
-            row.push(ele[KEY_CODE]);
-            row.push(ele[KEY_TITLE]);
-            row.push(ele[KEY_LEVEL]);
-            row.push(ele[KEY_ALERTS][0]);
+            row.push(cis[KEY_CODE]);
+            row.push(cis[KEY_TITLE]);
+            row.push(cis[KEY_LEVEL]);
+            row.push(cis[KEY_ALERTS][0]);
             rows.push(row);
         }
     });
