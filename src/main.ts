@@ -130,6 +130,9 @@ async function run(): Promise<void> {
         core.warning(`An error occured while creating the check run for container scan. Error: ${error}`);
     }
 
+    const scanReportPath = utils.getScanReport(trivyStatus, dockleStatus);
+    core.setOutput('scan-report', scanReportPath);
+
     if (trivyStatus == trivyHelper.TRIVY_EXIT_CODE) {
         throw new Error("Vulnerabilities were detected in the container image");
     }

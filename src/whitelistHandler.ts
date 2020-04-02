@@ -35,14 +35,14 @@ export function init() {
     try {
         const whitelistYaml = jsyaml.safeLoad(fs.readFileSync(whitelistFilePath, 'utf8'));
         if (whitelistYaml.general) {
-            if (whitelistYaml.general.commonVulnerabilities) {
+            if (whitelistYaml.general.vulnerabilities) {
                 trivyWhitelistExists = true;
-                const vulnArray: string[] = whitelistYaml.general.commonVulnerabilities;
+                const vulnArray: string[] = whitelistYaml.general.vulnerabilities;
                 const trivyWhitelistContent = vulnArray.join("\n");
                 fs.writeFileSync(trivyWhitelistPath, trivyWhitelistContent);
             }
-            if (whitelistYaml.general.bestPracticeVulnerabilities) {
-                const vulnArray: string[] = whitelistYaml.general.bestPracticeVulnerabilities;
+            if (whitelistYaml.general.bestPracticeViolations) {
+                const vulnArray: string[] = whitelistYaml.general.bestPracticeViolations;
                 const dockleWhitelistContent = vulnArray.join("\n");
                 fs.writeFileSync(dockleWhitelistPath, dockleWhitelistContent);
             }
