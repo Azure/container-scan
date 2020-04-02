@@ -23,7 +23,7 @@ inputs:
 
 outputs:
   scan-report-path:
-    description: 'File name where the scan results are stored'
+    description: 'File path where the scan results are stored'
 
 runs:
   using: 'node12'
