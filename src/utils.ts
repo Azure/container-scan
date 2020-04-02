@@ -27,11 +27,13 @@ export function getCheckRunPayloadWithScanResult(trivyStatus: number, dockleStat
   return checkRunPayload;
 }
 
-export function getScanReport(): string {
+export function getScanReport(trivyStatus: number, dockleStatus: number): string {
   const scanReportPath = `${fileHelper.getContainerScanDirectory()}/scanreport.json`;
-  const trivyOutput = trivyHelper.getFilteredOutput();
+  let trivyOutput = [];
+  if (trivyStatus === trivyHelper.TRIVY_EXIT_CODE)
+    trivyOutput = trivyHelper.getFilteredOutput();
   let dockleOutput = [];
-  if (inputHelper.isCisChecksEnabled())
+  if (inputHelper.isCisChecksEnabled() && dockleStatus === dockleHelper.DOCKLE_EXIT_CODE)
     dockleOutput = dockleHelper.getFilteredOutput();
   const scanReportObject = {
     "vulnerabilities": trivyOutput,
