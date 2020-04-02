@@ -1,3 +1,102 @@
+# Container Scan
+
+This action can be used to help you add some additional checks to help you secure your Docker Images in your  CI. This would help you attain some confidence in your docker image before pushing them to your container registry or a deployment.
+
+It internally uses `Trivy` and `Dockle` for running certain kinds of scans on these images. 
+- [`Trivy`](https://github.com/aquasecurity/trivy) helps you find the common vulnerabilities within your docker images. 
+- [`Dockle`](https://github.com/goodwithtech/dockle) is a container linter, which helps you identify if you haven't followed 
+  - Certain best practices while building the image 
+  - [CIS Benchmarks](https://www.cisecurity.org/cis-benchmarks/) to secure your docker image
+
+## Action inputs
+
+<table>
+  <thead>
+    <tr>
+      <th width="25%">Action input</th>
+      <th width="65%">Description</th>
+      <th width="10%">Default Value</th>
+    </tr>
+  </thead>
+  <tr>
+    <td><code>image-name</code></td>
+    <td>(Required) The Docker image to be scanned</td>
+    <td>''</td>
+  </tr>
+  <tr>
+    <td><code>severity-threshold</code></td>
+    <td>(Optional) Minimum severity threshold set to control flagging of the vulnerabilities found during the scan. The available levels are: (UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL); if you set the severity-threshold to be `MEDIUM` every CVE found of a level higher than or equal to `MEDIUM` would be displayed</td>
+    <td>HIGH</td>
+  </tr>
+  <tr>
+    <td><code>run-quality-checks</code></td>
+    <td>(Optional) This is a boolean value. When set to `true` adds additional checks to ensure the image follows best practices and CIS standards.</td>
+    <td>true</td>
+  </tr>
+  <tr>
+    <td><code>username</code></td>
+    <td>(Optional) Username to authenticate to the Docker registry. This is only required when you're trying to pull an image from your private registry</td>
+    <td>''</td>
+  </tr>
+  <tr>
+    <td><code>password</code></td>
+    <td>(Optional) Password to authenticate to the Docker registry. This is only required when you're trying to pull an image from your private registry</td>
+    <td>''</td>
+  </tr>
+</table>
+
+## Example YAML snippets
+
+### Container scan of an image available locally or publically available on dockerhub
+
+```yaml
+- uses: azure/container-scan@v1
+  with:
+    image-name: my-image
+```
+
+### Container scan of an image available on a private registry
+
+```yaml
+- uses: azure/container-scan@v1
+  with:
+    image-name: loginServerUrl/my-image # loginServerlUrl would be empty if it's hosted on dockerhub
+    username: ${{ secrets.DOCKER_USERNAME }}
+    password: ${{ secrets.DOCKER_PASSWORD }}
+```
+
+## End to end workflow
+
+The following is an example of not just this action, but how this action could be used along with other  actions to setup a CI. 
+
+Where your CI would:
+- Build a docker image 
+- Scan the docker image for any security vulnerabilities
+- Publish it to your private container registry.
+
+```yaml
+on: [push]
+
+jobs:
+  build-secure-and-push:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+
+    - run: docker build . -t contoso.azurecr.io/k8sdemo:${{ github.sha }}
+      
+    - uses: Azure/container-scan@v1
+      with:
+        image: contoso.azurecr.io/k8sdemo:${{ github.sha }}
+    
+    - uses: Azure/docker-login@v1
+      with:
+        login-server: contoso.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+    
+    - run: docker push contoso.azurecr.io/k8sdemo:${{ github.sha }}
+```
 
 # Contributing
 
