@@ -65,7 +65,7 @@ export function extractErrorsFromLogs(outputPath: string, toolName?: string): an
   return errors;
 }
 
-export function printToolLogs(outputPath: string) {
+export function addLogsToDebug(outputPath: string) {
   const out = fs.readFileSync(outputPath, 'utf8');
   core.debug(out);
 }
