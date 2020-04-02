@@ -4,6 +4,7 @@ import * as dockleHelper from './dockleHelper';
 import * as gitHubHelper from './gitHubHelper';
 import * as inputHelper from './inputHelper';
 import * as trivyHelper from './trivyHelper';
+import * as fileHelper from './fileHelper';
 
 export function getCheckRunPayloadWithScanResult(trivyStatus: number, dockleStatus: number): any {
   const headSha = gitHubHelper.getHeadSha();
@@ -24,6 +25,22 @@ export function getCheckRunPayloadWithScanResult(trivyStatus: number, dockleStat
   }
 
   return checkRunPayload;
+}
+
+export function getScanReport(trivyStatus: number, dockleStatus: number): string {
+  const scanReportPath = `${fileHelper.getContainerScanDirectory()}/scanreport.json`;
+  let trivyOutput = [];
+  if (trivyStatus === trivyHelper.TRIVY_EXIT_CODE)
+    trivyOutput = trivyHelper.getFilteredOutput();
+  let dockleOutput = [];
+  if (inputHelper.isCisChecksEnabled() && dockleStatus === dockleHelper.DOCKLE_EXIT_CODE)
+    dockleOutput = dockleHelper.getFilteredOutput();
+  const scanReportObject = {
+    "vulnerabilities": trivyOutput,
+    "bestPracticeViolations": dockleOutput
+  };
+  fs.writeFileSync(scanReportPath, JSON.stringify(scanReportObject, null, 2));
+  return scanReportPath;
 }
 
 export function getConfigForTable(widths: number[]): any {
