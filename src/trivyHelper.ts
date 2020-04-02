@@ -157,7 +157,7 @@ export function getSeveritiesToInclude(warnIfInvalid?: boolean): string[] {
     return severities;
 }
 
-export function getTrivyFilteredOutput(): any {
+export function getFilteredOutput(): any {
     const vulnerabilities = getVulnerabilities();
     let filteredVulnerabilities = [];
     vulnerabilities.forEach((cve: any) => {
