@@ -107,7 +107,7 @@ async function run(): Promise<void> {
     }
 
     let dockleStatus: number;
-    if (inputHelper.isCisChecksEnabled()) {
+    if (inputHelper.isRunQualityChecksEnabled()) {
         dockleStatus = await runDockle();
         if (dockleStatus === dockleHelper.DOCKLE_EXIT_CODE) {
             dockleHelper.printFormattedOutput();
@@ -131,7 +131,7 @@ async function run(): Promise<void> {
     }
 
     const scanReportPath = utils.getScanReport(trivyStatus, dockleStatus);
-    core.setOutput('scan-report', scanReportPath);
+    core.setOutput('scan-report-path', scanReportPath);
 
     if (trivyStatus == trivyHelper.TRIVY_EXIT_CODE) {
         throw new Error("Vulnerabilities were detected in the container image");

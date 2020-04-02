@@ -33,7 +33,7 @@ export function getScanReport(trivyStatus: number, dockleStatus: number): string
   if (trivyStatus === trivyHelper.TRIVY_EXIT_CODE)
     trivyOutput = trivyHelper.getFilteredOutput();
   let dockleOutput = [];
-  if (inputHelper.isCisChecksEnabled() && dockleStatus === dockleHelper.DOCKLE_EXIT_CODE)
+  if (inputHelper.isRunQualityChecksEnabled() && dockleStatus === dockleHelper.DOCKLE_EXIT_CODE)
     dockleOutput = dockleHelper.getFilteredOutput();
   const scanReportObject = {
     "vulnerabilities": trivyOutput,
@@ -97,7 +97,7 @@ function getCheckSummary(trivyStatus: number, dockleStatus: number): string {
   const trivySummary = trivyHelper.getSummary(trivyStatus);
   let summary = `${header}\n\n${trivySummary}`;
 
-  if (inputHelper.isCisChecksEnabled()) {
+  if (inputHelper.isRunQualityChecksEnabled()) {
     const dockleSummary = dockleHelper.getSummary(dockleStatus);
     summary = `${summary}\n\n${dockleSummary}`;
   }
@@ -110,7 +110,7 @@ function getCheckText(trivyStatus: number, dockleStatus: number): string {
   const trivyText = trivyHelper.getText(trivyStatus);
   let text = trivyText;
 
-  if (inputHelper.isCisChecksEnabled()) {
+  if (inputHelper.isRunQualityChecksEnabled()) {
     const dockleText = dockleHelper.getText(dockleStatus);
     text = `${text}\n${separator}\n${dockleText}`;
   }
