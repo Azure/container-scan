@@ -34,8 +34,8 @@ export function getScanReport(): string {
   if (inputHelper.isCisChecksEnabled())
     dockleOutput = dockleHelper.getFilteredOutput();
   const scanReportObject = {
-    "commonVulnerabilities": trivyOutput,
-    "bestPracticeVulnerabilities": dockleOutput
+    "vulnerabilities": trivyOutput,
+    "bestPracticeViolations": dockleOutput
   };
   fs.writeFileSync(scanReportPath, JSON.stringify(scanReportObject, null, 2));
   return scanReportPath;
