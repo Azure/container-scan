@@ -5,7 +5,7 @@ inputs:
     description: 'Docker image to scan'
     required: true
   run-quality-checks:
-    description: 'This is a boolean value, which when set to `true` adds additional checks to ensure the image is follows best practices and CIS standards.'
+    description: 'his is a boolean value. When set to `true` adds additional checks to ensure the image follows best practices and CIS standards.'
     default: 'true'
   severity-threshold:
     description: '(Optional) Minimum severity threshold set to control flagging of the vulnerabilities found during the scan. The available levels are: (UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL); if you set the severity-threshold to be `MEDIUM` every CVE found of a level higher than or equal to `MEDIUM` would be displayed'
