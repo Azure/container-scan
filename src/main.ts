@@ -92,6 +92,7 @@ async function runDockle(): Promise<number> {
 }
 
 async function run(): Promise<void> {
+    inputHelper.validateRequiredInputs();
     whitelistHandler.init();
     const trivyStatus = await runTrivy();
     if (trivyStatus === trivyHelper.TRIVY_EXIT_CODE) {

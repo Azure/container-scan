@@ -1,6 +1,6 @@
 name: 'Container image scan'
 description: 'Scan container images for vulnerabilities and CIS guidelines'
-inputs: 
+inputs:
   image-name:
     description: 'Docker image to scan'
     required: true
@@ -17,9 +17,11 @@ inputs:
   token:
     description: 'Github token'
     default: ${{ github.token }}
+    required: true
   run-quality-checks:
     description: 'Add additional checks to ensure the image is secure and follows best practices and CIS standards'
     default: 'true'
+    required: false
 
 outputs:
   scan-report-path:
