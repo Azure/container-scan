@@ -10,3 +10,8 @@ export const runQualityChecks = core.getInput("run-quality-checks");
 export function isRunQualityChecksEnabled(): boolean {
     return runQualityChecks.toLowerCase() === "true";
 }
+
+export function validateRequiredInputs() {
+    if (!imageName)
+        throw new Error("Could not find required input: image-name");
+}
