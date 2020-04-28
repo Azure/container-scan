@@ -14,4 +14,6 @@ export function isRunQualityChecksEnabled(): boolean {
 export function validateRequiredInputs() {
     if (!imageName)
         throw new Error("Could not find required input: image-name");
+    if (!githubToken)
+        throw new Error("'token' input is not supplied. Set it to a PAT/GITHUB_TOKEN");
 }
