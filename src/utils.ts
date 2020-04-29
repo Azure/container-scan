@@ -27,6 +27,24 @@ export function getCheckRunPayloadWithScanResult(trivyStatus: number, dockleStat
   return checkRunPayload;
 }
 
+export function getCheckRunThroughAppPayloadWithScanResult(trivyStatus: number, dockleStatus: number): any {
+  const headSha = gitHubHelper.getHeadSha();
+  // const checkConclusion = getCheckConclusion(trivyStatus, dockleStatus);
+  const checkSummary = getCheckSummary(trivyStatus, dockleStatus);
+  const checkText = getCheckText(trivyStatus, dockleStatus);
+
+  const checkRunThroughAppPayload = {
+    head_sha: headSha,
+    image_name: inputHelper.imageName,
+    summary: checkSummary,
+    description: checkText,
+    action_sha: process.env['GITHUB_ACTION'],
+    action_name: process.env['GITHUB_ACTION']
+  }
+
+  return checkRunThroughAppPayload;
+}
+
 export function getScanReport(trivyStatus: number, dockleStatus: number): string {
   const scanReportPath = `${fileHelper.getContainerScanDirectory()}/scanreport.json`;
   let trivyOutput = [];
