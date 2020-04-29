@@ -45,6 +45,26 @@ It internally uses `Trivy` and `Dockle` for running certain kinds of scans on th
   </tr>
 </table>
 
+## Action output
+The action generates an output file consisting of detailed description of all the detected vulnerabilities and best practice violations in JSON format. This file can be accessed by using the output variable `scan-report-path`.
+
+## Whitelisting vulnerabilities
+In case you would like the action to ignore any vulnerabilities and best practice checks, create a whitelist file at the path `.github/containerscan/whitelist.yaml` in your repo. Here's an example whitelist.yaml file.
+
+```yaml
+general:
+  vulnerabilities:
+    - CVE-2003-1307
+    - CVE-2007-0086
+    - CVE-2019-3462
+    - CVE-2011-3374
+  bestPracticeViolations:
+    - CIS-DI-0005
+    - DKL-LI-0003
+    - CIS-DI-0006
+    - DKL-DI-0006
+```
+
 ## Example YAML snippets
 
 ### Container scan of an image available locally or publically available on dockerhub
@@ -87,7 +107,7 @@ jobs:
       
     - uses: Azure/container-scan@v1
       with:
-        image: contoso.azurecr.io/k8sdemo:${{ github.sha }}
+        image-name: contoso.azurecr.io/k8sdemo:${{ github.sha }}
     
     - uses: Azure/docker-login@v1
       with:
