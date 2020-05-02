@@ -14,7 +14,7 @@ export function getTrivyWhitelist(): string {
 }
 
 function initializeTrivyWhitelistPath() {
-    trivyWhitelistPath= `${fileHelper.getContainerScanDirectory()}/.trivyignore`;
+    trivyWhitelistPath = `${fileHelper.getContainerScanDirectory()}/.trivyignore`;
 }
 
 function initializeDockleWhitelistPath() {
@@ -23,10 +23,13 @@ function initializeDockleWhitelistPath() {
 }
 
 export function init() {
-    const whitelistFilePath = `${process.env['GITHUB_WORKSPACE']}/.github/containerscan/whitelist.yaml`;
+    let whitelistFilePath = `${process.env['GITHUB_WORKSPACE']}/.github/containerscan/whitelist.yaml`;
     if (!fs.existsSync(whitelistFilePath)) {
-        console.log("Could not find whitelist file.");
-        return;
+        whitelistFilePath = `${process.env['GITHUB_WORKSPACE']}/.github/containerscan/whitelist.yml`;
+        if (!fs.existsSync(whitelistFilePath)) {
+            console.log("Could not find whitelist file.");
+            return;
+        }
     }
 
     initializeTrivyWhitelistPath();
