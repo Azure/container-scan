@@ -6,7 +6,7 @@ import * as inputHelper from './inputHelper';
 import * as trivyHelper from './trivyHelper';
 import * as fileHelper from './fileHelper';
 
-export function getCheckRunPayloadWithScanResult(trivyStatus: number, dockleStatus: number): any {
+export function getCheckRunPayload(trivyStatus: number, dockleStatus: number): any {
   const headSha = gitHubHelper.getHeadSha();
   const checkConclusion = getCheckConclusion(trivyStatus, dockleStatus);
   const checkSummary = getCheckSummary(trivyStatus, dockleStatus);
@@ -27,19 +27,23 @@ export function getCheckRunPayloadWithScanResult(trivyStatus: number, dockleStat
   return checkRunPayload;
 }
 
-export function getCheckRunThroughAppPayloadWithScanResult(trivyStatus: number, dockleStatus: number): any {
+export function getCheckRunThroughAppPayload(trivyStatus: number, dockleStatus: number): any {
   const headSha = gitHubHelper.getHeadSha();
   const checkConclusion = getCheckConclusion(trivyStatus, dockleStatus);
   const checkSummary = getCheckSummary(trivyStatus, dockleStatus);
   const checkText = getCheckText(trivyStatus, dockleStatus);
 
   const checkRunThroughAppPayload = {
+    action_name: process.env['GITHUB_ACTION'],
+    action_sha: process.env['GITHUB_ACTION'],
+    additional_properties: {
+      is_pull_request: gitHubHelper.isPullRequestTrigger()
+    },
+    description: checkText,
     head_sha: headSha,
     image_name: inputHelper.imageName,
-    summary: checkSummary,
-    description: `status: ${checkConclusion}|${checkText}`,
-    action_sha: process.env['GITHUB_ACTION'],
-    action_name: process.env['GITHUB_ACTION']
+    status: checkConclusion,
+    summary: checkSummary
   }
 
   return checkRunThroughAppPayload;

@@ -124,9 +124,9 @@ async function run(): Promise<void> {
     }
 
     try {
-        // const checkRunPayload = utils.getCheckRunPayloadWithScanResult(trivyStatus, dockleStatus);
+        // const checkRunPayload = utils.getCheckRunPayload(trivyStatus, dockleStatus);
         // await githubClient.createCheckRun(checkRunPayload);
-        const checkRunPayload = utils.getCheckRunThroughAppPayloadWithScanResult(trivyStatus, dockleStatus);
+        const checkRunPayload = utils.getCheckRunThroughAppPayload(trivyStatus, dockleStatus);
         const githubClient = new GitHubClient(process.env.GITHUB_REPOSITORY, inputHelper.githubToken);
         await githubClient.createCheckRunThroughApp(checkRunPayload);
     } catch (error) {
