@@ -124,9 +124,10 @@ async function run(): Promise<void> {
     }
 
     try {
-        const checkRunPayload = utils.getCheckRunPayloadWithScanResult(trivyStatus, dockleStatus);
+        const checkRunPayload = utils.getCheckRunPayload(trivyStatus, dockleStatus);
+        const checkRunThroughAppPayload = utils.getCheckRunThroughAppPayload(trivyStatus, dockleStatus);
         const githubClient = new GitHubClient(process.env.GITHUB_REPOSITORY, inputHelper.githubToken);
-        await githubClient.createCheckRun(checkRunPayload);
+        await githubClient.createCheckRunWithFallback(checkRunThroughAppPayload, checkRunPayload);
     } catch (error) {
         core.warning(`An error occured while creating the check run for container scan. Error: ${error}`);
     }

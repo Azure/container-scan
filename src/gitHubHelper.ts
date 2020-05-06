@@ -5,7 +5,7 @@ export function getHeadSha(): string {
     return isPullRequestTrigger() ? getPullRequestHeadSha() : process.env['GITHUB_SHA'];
 }
 
-function isPullRequestTrigger(): boolean {
+export function isPullRequestTrigger(): boolean {
     return process.env['GITHUB_EVENT_NAME'] === 'pull_request';
 }
 
