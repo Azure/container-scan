@@ -5,26 +5,29 @@ import * as gitHubHelper from './gitHubHelper';
 import * as inputHelper from './inputHelper';
 import * as trivyHelper from './trivyHelper';
 import * as fileHelper from './fileHelper';
+import { GitHubClient } from './githubClient';
+import { StatusCodes } from "./httpClient";
 
-export function getCheckRunPayloadWithScanResult(trivyStatus: number, dockleStatus: number): any {
-  const headSha = gitHubHelper.getHeadSha();
-  const checkConclusion = getCheckConclusion(trivyStatus, dockleStatus);
-  const checkSummary = getCheckSummary(trivyStatus, dockleStatus);
-  const checkText = getCheckText(trivyStatus, dockleStatus);
-
-  const checkRunPayload = {
-    head_sha: headSha,
-    name: `[container-scan] ${inputHelper.imageName}`,
-    status: "completed",
-    conclusion: checkConclusion,
-    output: {
-      title: "Container scan result",
-      summary: checkSummary,
-      text: checkText
-    }
+export async function createScanResult(trivyStatus: number, dockleStatus: number): Promise<void> {
+  const gitHubClient = new GitHubClient(process.env.GITHUB_REPOSITORY, inputHelper.githubToken);
+  const scanResultPayload = getScanResultPayload(trivyStatus, dockleStatus);
+  const response = await gitHubClient.createScanResult(scanResultPayload);
+  
+  if (response.statusCode == StatusCodes.UNPROCESSABLE_ENTITY
+    && response.body
+    && response.body.message
+    && response.body.message.error_code === 'APP_NOT_INSTALLED') {
+    // If the app is not installed, try to create the check run using GitHub actions token.
+    console.log('Looks like the scanitizer app is not installed on the repo. Falling back to check run creation through GitHub actions app...');
+    const checkRunPayload = getCheckRunPayload(trivyStatus, dockleStatus);
+    await gitHubClient.createCheckRun(checkRunPayload);
   }
-
-  return checkRunPayload;
+  else if (response.statusCode != StatusCodes.OK) {
+    throw Error(`An error occured while creating scan result. Statuscode: ${response.statusCode}, StatusMessage: ${response.statusMessage}, head_sha: ${scanResultPayload['head_sha']}`);
+  }
+  else {
+    console.log(`Created scan result. Url: ${response.body['check_run']['html_url']}`);
+  }
 }
 
 export function getScanReport(trivyStatus: number, dockleStatus: number): string {
@@ -85,6 +88,50 @@ export function extractErrorsFromLogs(outputPath: string, toolName?: string): an
 export function addLogsToDebug(outputPath: string) {
   const out = fs.readFileSync(outputPath, 'utf8');
   core.debug(out);
+}
+
+function getCheckRunPayload(trivyStatus: number, dockleStatus: number): any {
+  const headSha = gitHubHelper.getHeadSha();
+  const checkConclusion = getCheckConclusion(trivyStatus, dockleStatus);
+  const checkSummary = getCheckSummary(trivyStatus, dockleStatus);
+  const checkText = getCheckText(trivyStatus, dockleStatus);
+
+  const payload = {
+    head_sha: headSha,
+    name: `[container-scan] ${inputHelper.imageName}`,
+    status: "completed",
+    conclusion: checkConclusion,
+    output: {
+      title: "Container scan result",
+      summary: checkSummary,
+      text: checkText
+    }
+  }
+
+  return payload;
+}
+
+function getScanResultPayload(trivyStatus: number, dockleStatus: number): any {
+  const headSha = gitHubHelper.getHeadSha();
+  const checkConclusion = getCheckConclusion(trivyStatus, dockleStatus);
+  const checkSummary = getCheckSummary(trivyStatus, dockleStatus);
+  const checkText = getCheckText(trivyStatus, dockleStatus);
+
+  const payload = {
+    action_name: process.env['GITHUB_ACTION'],
+    action_sha: process.env['GITHUB_ACTION'],
+    additional_properties: {
+      conclusion: checkConclusion,
+      is_pull_request: gitHubHelper.isPullRequestTrigger()
+    },
+    description: checkText,
+    head_sha: headSha,
+    image_name: inputHelper.imageName,
+    status: "completed",
+    summary: checkSummary
+  }
+
+  return payload;
 }
 
 function getCheckConclusion(trivyStatus: number, dockleStatus: number): string {
