@@ -3,7 +3,6 @@ import * as util from 'util';
 import * as fs from 'fs';
 import { ExecOptions } from '@actions/exec/lib/interfaces';
 import { ToolRunner } from '@actions/exec/lib/toolrunner';
-import { GitHubClient } from './githubClient';
 import * as dockleHelper from './dockleHelper';
 import * as inputHelper from './inputHelper';
 import * as whitelistHandler from './whitelistHandler';
@@ -124,9 +123,7 @@ async function run(): Promise<void> {
     }
 
     try {
-        const checkRunPayload = utils.getCheckRunPayloadWithScanResult(trivyStatus, dockleStatus);
-        const githubClient = new GitHubClient(process.env.GITHUB_REPOSITORY, inputHelper.githubToken);
-        await githubClient.createCheckRun(checkRunPayload);
+        await utils.createScanResult(trivyStatus, dockleStatus);
     } catch (error) {
         core.warning(`An error occured while creating the check run for container scan. Error: ${error}`);
     }
