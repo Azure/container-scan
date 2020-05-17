@@ -70,7 +70,7 @@ general:
 ### Container scan of an image available locally or publically available on dockerhub
 
 ```yaml
-- uses: azure/container-scan@v1
+- uses: azure/container-scan@v0
   with:
     image-name: my-image
 ```
@@ -78,7 +78,7 @@ general:
 ### Container scan of an image available on a private registry
 
 ```yaml
-- uses: azure/container-scan@v1
+- uses: azure/container-scan@v0
   with:
     image-name: loginServerUrl/my-image # loginServerlUrl would be empty if it's hosted on dockerhub
     username: ${{ secrets.DOCKER_USERNAME }}
@@ -105,7 +105,7 @@ jobs:
 
     - run: docker build . -t contoso.azurecr.io/k8sdemo:${{ github.sha }}
       
-    - uses: Azure/container-scan@v1
+    - uses: Azure/container-scan@v0
       with:
         image-name: contoso.azurecr.io/k8sdemo:${{ github.sha }}
     
