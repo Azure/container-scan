@@ -48,8 +48,8 @@ It internally uses `Trivy` and `Dockle` for running certain kinds of scans on th
 ## Action output
 The action generates an output file consisting of detailed description of all the detected vulnerabilities and best practice violations in JSON format. This file can be accessed by using the output variable `scan-report-path`.
 
-## Whitelisting vulnerabilities
-In case you would like the action to ignore any vulnerabilities and best practice checks, create a whitelist file at the path `.github/containerscan/whitelist.yaml` in your repo. Here's an example whitelist.yaml file.
+## Ignoring vulnerabilities
+In case you would like the action to ignore any vulnerabilities and best practice checks, create an allowedlist file at the path `.github/containerscan/allowedlist.yaml` in your repo. Here's an example allowedlist.yaml file.
 
 ```yaml
 general:
