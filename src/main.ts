@@ -5,7 +5,7 @@ import { ExecOptions } from '@actions/exec/lib/interfaces';
 import { ToolRunner } from '@actions/exec/lib/toolrunner';
 import * as dockleHelper from './dockleHelper';
 import * as inputHelper from './inputHelper';
-import * as whitelistHandler from './whitelistHandler';
+import * as allowedlistHandler from './allowedlistHandler';
 import * as trivyHelper from './trivyHelper';
 import * as utils from './utils';
 
@@ -27,8 +27,8 @@ async function getTrivyEnvVariables(): Promise<{ [key: string]: string }> {
     trivyEnv["TRIVY_OUTPUT"] = trivyHelper.getOutputPath();
     trivyEnv["GITHUB_TOKEN"] = inputHelper.githubToken;
 
-    if (whitelistHandler.trivyWhitelistExists) {
-        trivyEnv["TRIVY_IGNOREFILE"] = whitelistHandler.getTrivyWhitelist();
+    if (allowedlistHandler.trivyAllowedlistExists) {
+        trivyEnv["TRIVY_IGNOREFILE"] = allowedlistHandler.getTrivyAllowedlist();
     }
 
     const severities = trivyHelper.getSeveritiesToInclude(true);
@@ -92,7 +92,7 @@ async function runDockle(): Promise<number> {
 
 async function run(): Promise<void> {
     inputHelper.validateRequiredInputs();
-    whitelistHandler.init();
+    allowedlistHandler.init();
     const trivyStatus = await runTrivy();
     if (trivyStatus === trivyHelper.TRIVY_EXIT_CODE) {
         trivyHelper.printFormattedOutput();
