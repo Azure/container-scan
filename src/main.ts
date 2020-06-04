@@ -1,99 +1,14 @@
 import * as core from '@actions/core';
-import * as util from 'util';
-import * as fs from 'fs';
-import { ExecOptions } from '@actions/exec/lib/interfaces';
-import { ToolRunner } from '@actions/exec/lib/toolrunner';
 import * as dockleHelper from './dockleHelper';
 import * as inputHelper from './inputHelper';
 import * as allowedlistHandler from './allowedlistHandler';
 import * as trivyHelper from './trivyHelper';
 import * as utils from './utils';
 
-async function getTrivyEnvVariables(): Promise<{ [key: string]: string }> {
-    let trivyEnv: { [key: string]: string } = {};
-    for (let key in process.env) {
-        trivyEnv[key] = process.env[key] || "";
-    }
-
-    const username = inputHelper.username;
-    const password = inputHelper.password;
-    if (username && password) {
-        trivyEnv["TRIVY_USERNAME"] = username;
-        trivyEnv["TRIVY_PASSWORD"] = password;
-    }
-
-    trivyEnv["TRIVY_EXIT_CODE"] = trivyHelper.TRIVY_EXIT_CODE.toString();
-    trivyEnv["TRIVY_FORMAT"] = "json";
-    trivyEnv["TRIVY_OUTPUT"] = trivyHelper.getOutputPath();
-    trivyEnv["GITHUB_TOKEN"] = inputHelper.githubToken;
-
-    if (allowedlistHandler.trivyAllowedlistExists) {
-        trivyEnv["TRIVY_IGNOREFILE"] = allowedlistHandler.getTrivyAllowedlist();
-    }
-
-    const severities = trivyHelper.getSeveritiesToInclude(true);
-    trivyEnv["TRIVY_SEVERITY"] = severities.join(',');
-
-    return trivyEnv;
-}
-
-async function getDockleEnvVariables(): Promise<{ [key: string]: string }> {
-    let dockleEnv: { [key: string]: string } = {};
-    for (let key in process.env) {
-        dockleEnv[key] = process.env[key] || "";
-    }
-
-    const username = inputHelper.username;
-    const password = inputHelper.password;
-    if (username && password) {
-        dockleEnv["DOCKLE_USERNAME"] = username;
-        dockleEnv["DOCKLE_PASSWORD"] = password;
-    }
-
-    return dockleEnv;
-}
-
-async function runTrivy(): Promise<number> {
-    const trivyPath = await trivyHelper.getTrivy();
-    core.debug(util.format("Trivy executable found at path ", trivyPath));
-    const trivyEnv = await getTrivyEnvVariables();
-
-    const imageName = inputHelper.imageName;
-    const trivyOptions: ExecOptions = {
-        env: trivyEnv,
-        ignoreReturnCode: true,
-        outStream: fs.createWriteStream(trivyHelper.getTrivyLogPath())
-    };
-    console.log("Scanning for vulnerabilties...");
-    const trivyToolRunner = new ToolRunner(trivyPath, [imageName], trivyOptions);
-    const trivyStatus = await trivyToolRunner.exec();
-    utils.addLogsToDebug(trivyHelper.getTrivyLogPath());
-    return trivyStatus;
-}
-
-async function runDockle(): Promise<number> {
-    const docklePath = await dockleHelper.getDockle();
-    core.debug(util.format("Dockle executable found at path ", docklePath));
-    const dockleEnv = await getDockleEnvVariables();
-    const imageName = inputHelper.imageName;
-
-    const dockleOptions: ExecOptions = {
-        env: dockleEnv,
-        ignoreReturnCode: true,
-        outStream: fs.createWriteStream(dockleHelper.getDockleLogPath())
-    };
-    console.log("Scanning for CIS and best practice violations...");
-    let dockleArgs = ['-f', 'json', '-o', dockleHelper.getOutputPath(), '--exit-level', dockleHelper.LEVEL_INFO, '--exit-code', dockleHelper.DOCKLE_EXIT_CODE.toString(), imageName];
-    const dockleToolRunner = new ToolRunner(docklePath, dockleArgs, dockleOptions);
-    const dockleStatus = await dockleToolRunner.exec();
-    utils.addLogsToDebug(dockleHelper.getDockleLogPath());
-    return dockleStatus;
-}
-
-async function run(): Promise<void> {
+export async function run(): Promise<void> {
     inputHelper.validateRequiredInputs();
     allowedlistHandler.init();
-    const trivyStatus = await runTrivy();
+    const trivyStatus = await trivyHelper.runTrivy();
     if (trivyStatus === trivyHelper.TRIVY_EXIT_CODE) {
         trivyHelper.printFormattedOutput();
     } else if (trivyStatus === 0) {
@@ -108,7 +23,7 @@ async function run(): Promise<void> {
 
     let dockleStatus: number;
     if (inputHelper.isRunQualityChecksEnabled()) {
-        dockleStatus = await runDockle();
+        dockleStatus = await dockleHelper.runDockle();
         if (dockleStatus === dockleHelper.DOCKLE_EXIT_CODE) {
             dockleHelper.printFormattedOutput();
         } else if (dockleStatus === 0) {

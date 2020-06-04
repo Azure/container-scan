@@ -5,8 +5,11 @@ import * as toolCache from '@actions/tool-cache';
 import * as core from '@actions/core';
 import * as table from 'table';
 import * as semver from 'semver';
+import { ExecOptions } from '@actions/exec/lib/interfaces';
+import { ToolRunner } from '@actions/exec/lib/toolrunner';
 import * as fileHelper from './fileHelper';
 import * as utils from './utils';
+import * as inputHelper from './inputHelper';
 
 export const DOCKLE_EXIT_CODE = 5;
 export const LEVEL_INFO = "INFO";
@@ -28,6 +31,25 @@ const TITLE_VULNERABILITY_ID = "VULNERABILITY ID";
 const TITLE_TITLE = "TITLE";
 const TITLE_SEVERITY = "SEVERITY";
 const TITLE_DESCRIPTION = "DESCRIPTION";
+
+export async function runDockle(): Promise<number> {
+    const docklePath = await getDockle();
+    core.debug(util.format("Dockle executable found at path ", docklePath));
+    const dockleEnv = await getDockleEnvVariables();
+    const imageName = inputHelper.imageName;
+
+    const dockleOptions: ExecOptions = {
+        env: dockleEnv,
+        ignoreReturnCode: true,
+        outStream: fs.createWriteStream(getDockleLogPath())
+    };
+    console.log("Scanning for CIS and best practice violations...");
+    let dockleArgs = ['-f', 'json', '-o', getOutputPath(), '--exit-level', LEVEL_INFO, '--exit-code', DOCKLE_EXIT_CODE.toString(), imageName];
+    const dockleToolRunner = new ToolRunner(docklePath, dockleArgs, dockleOptions);
+    const dockleStatus = await dockleToolRunner.exec();
+    utils.addLogsToDebug(getDockleLogPath());
+    return dockleStatus;
+}
 
 export async function getDockle(): Promise<string> {
     const latestDockleVersion = await getLatestDockleVersion();
@@ -107,6 +129,22 @@ export function getFilteredOutput(): any {
         }
     });
     return filteredVulnerabilities;
+}
+
+async function getDockleEnvVariables(): Promise<{ [key: string]: string }> {
+    let dockleEnv: { [key: string]: string } = {};
+    for (let key in process.env) {
+        dockleEnv[key] = process.env[key] || "";
+    }
+
+    const username = inputHelper.username;
+    const password = inputHelper.password;
+    if (username && password) {
+        dockleEnv["DOCKLE_USERNAME"] = username;
+        dockleEnv["DOCKLE_PASSWORD"] = password;
+    }
+
+    return dockleEnv;
 }
 
 function getLevelsToInclude(): string[] {
