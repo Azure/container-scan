@@ -8,18 +8,25 @@ class HttpClient {
     }
 }
 
+let mockedMessage = {
+    statusCode: 200,
+    statusMessage: 'some_message',
+    headers: 'some_header'
+};
+
+function __setMockedMessage(message) {
+    mockedMessage = message;
+}
+
 class HttpClientResponse {
-    message = {
-        statusCode: 200,
-        statusMessage: 'some_message',
-        headers: 'some_header'
-    };
+    message = mockedMessage;
     body = {
         'html_url': 'https://some.url',
         'check_run': {
             'some_key': 'some_value',
             'html_url': 'https://some.url'
-        }
+        },
+        'message': this.message
     };
     constructor() {
         console.log('HttpClientResponse constructor called');
@@ -32,7 +39,8 @@ class HttpClientResponse {
 
 var httpClient = {
     HttpClient: HttpClient,
-    HttpClientResponse: HttpClientResponse
+    HttpClientResponse: HttpClientResponse,
+    __setMockedMessage: __setMockedMessage
 }
 
 module.exports = httpClient;

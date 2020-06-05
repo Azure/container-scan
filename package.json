@@ -5,7 +5,8 @@
   "main": "lib/main.js",
   "scripts": {
     "build": "tsc",
-    "test": "jest --silent"
+    "test": "jest --silent",
+    "test-coverage": "jest --silent --coverage"
   },
   "author": "Shivam Gupta",
   "license": "MIT",

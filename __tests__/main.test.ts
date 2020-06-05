@@ -6,6 +6,7 @@ const mockedOs = require('os');
 const mockedToolCache = require('@actions/tool-cache');
 const mockedToolRunner = require('@actions/exec/lib/toolrunner');
 const mockedCore = require('@actions/core');
+const mockedHttpClient = require('typed-rest-client/HttpClient');
 const testUtil = require('./testUtil');
 
 const env = process.env;
@@ -13,7 +14,9 @@ process.env = {
     'GITHUB_WORKSPACE': 'test',
     'GITHUB_SHA': 'sha',
     'GITHUB_REPOSITORY': 'test_repo',
-    'GITHUB_TOKEN': 'token'
+    'GITHUB_TOKEN': 'token',
+    'GITHUB_EVENT_PATH': 'test_event.json',
+    'GITHUB_EVENT_NAME': 'pull_request'
 };
 
 Date.now = jest.fn().mockReturnValue(123);
@@ -38,7 +41,7 @@ describe('Validate inputs', () => {
             expect(inputHelper.validateRequiredInputs).toThrow();
         });
     });
-    
+
     test('Inputs should be validated successfully', () => {
         // Input validation tests need to be run in isolation because inputs are read at the time when module gets imported
         jest.isolateModules(() => {
@@ -129,13 +132,13 @@ describe('Run Dockle', () => {
 });
 
 describe('Initialize allowedlist file', () => {
-    const allowedlistHandler = require('../src/allowedlistHandler');
 
     afterEach(() => {
         jest.clearAllMocks();
     });
 
     test('No allowedlist file is given', () => {
+        const allowedlistHandler = require('../src/allowedlistHandler');
         expect(allowedlistHandler.init).not.toThrow();
         expect(mockedFs.existsSync).not.toReturnWith(true);
         expect(mockedFs.existsSync).toHaveBeenCalledTimes(2);
@@ -146,6 +149,7 @@ describe('Initialize allowedlist file', () => {
             'test/.github/containerscan/allowedlist.yaml': '{general: {vulnerabilities: [CVE-2003-1307, CVE-2007-0086], bestPracticeViolations: [CIS-DI-0005, DKL-LI-0003]}}'
         };
         mockedFs.__setMockFiles(mockFile);
+        const allowedlistHandler = require('../src/allowedlistHandler');
         expect(allowedlistHandler.init).not.toThrow();
         expect(mockedFs.existsSync).toReturnWith(true);
         expect(mockedFs.existsSync).toHaveBeenCalledTimes(1);
@@ -157,6 +161,7 @@ describe('Initialize allowedlist file', () => {
             'test/.github/containerscan/allowedlist.yml': '{general: {vulnerabilities: [CVE-2003-1307, CVE-2007-0086], bestPracticeViolations: [CIS-DI-0005, DKL-LI-0003]}}'
         };
         mockedFs.__setMockFiles(mockFile);
+        const allowedlistHandler = require('../src/allowedlistHandler');
         expect(allowedlistHandler.init).not.toThrow();
         expect(mockedFs.existsSync).toReturnWith(true);
         expect(mockedFs.existsSync).toHaveBeenCalledTimes(2);
@@ -168,6 +173,7 @@ describe('Initialize allowedlist file', () => {
             'test/.github/containerscan/allowedlist.yaml': '{general [CVE-2003-1307, CVE-2007-0086]}'
         };
         mockedFs.__setMockFiles(mockFile);
+        const allowedlistHandler = require('../src/allowedlistHandler');
         expect(allowedlistHandler.init).toThrow();
         expect(mockedFs.writeFileSync).toHaveBeenCalledTimes(0);
     });
@@ -177,6 +183,7 @@ describe('Initialize allowedlist file', () => {
             'test/.github/containerscan/allowedlist.yml': '{general: {vulnerabilities: [CVE-2003-1307, CVE-2007-0086]}}'
         };
         mockedFs.__setMockFiles(mockFile);
+        const allowedlistHandler = require('../src/allowedlistHandler');
         expect(allowedlistHandler.init).not.toThrow();
         expect(mockedFs.writeFileSync).toHaveBeenCalledTimes(1);
     });
@@ -187,22 +194,37 @@ describe('Create scan report to test HTTP calls', () => {
         jest.clearAllMocks();
     });
 
-    test('When no vulnerabilities are detected', () => {
-        const util = require('../src/utils');     
-        util.createScanResult(0, 0);
-        expect(util.createScanResult).not.toThrow();
+    test('When no vulnerabilities are detected', async () => {
+        let mockFile = {
+            'test_event.json': JSON.stringify({
+                'pull_request': {
+                    'head': {
+                        'sha': 'test_sha'
+                    }
+                }
+            })
+        };
+        mockedFs.__setMockFiles(mockFile);
+        const util = require('../src/utils');
+        await expect(util.createScanResult(0, 0)).resolves.not.toThrow();
     });
 
-    test('When vulnerabilities are detected', () => {
-        const util = require('../src/utils');
+    test('When vulnerabilities are detected', async () => {
         let mockFile = {
             'test/_temp/containerscan_123': true,
             'test/_temp/containerscan_123/trivyoutput.json': JSON.stringify(testUtil.trivyOutput),
-            'test/_temp/containerscan_123/dockleoutput.json': JSON.stringify(testUtil.dockleOutput)
+            'test/_temp/containerscan_123/dockleoutput.json': JSON.stringify(testUtil.dockleOutput),
+            'test_event.json': JSON.stringify({
+                'pull_request': {
+                    'head': {
+                        'sha': 'test_sha'
+                    }
+                }
+            })
         }
-        mockedFs.__setMockFiles(mockFile);        
-        util.createScanResult(5, 5);
-        expect(util.createScanResult).not.toThrow();
+        mockedFs.__setMockFiles(mockFile);
+        const util = require('../src/utils');
+        await expect(util.createScanResult(5, 5)).resolves.not.toThrow();
     });
 });
 
