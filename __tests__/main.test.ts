@@ -8,20 +8,19 @@ const mockedToolRunner = require('@actions/exec/lib/toolrunner');
 const mockedCore = require('@actions/core');
 const testUtil = require('./testUtil');
 
-process.env['GITHUB_WORKSPACE'] = 'test';
+const env = process.env;
+process.env = {
+    'GITHUB_WORKSPACE': 'test',
+    'GITHUB_SHA': 'sha',
+    'GITHUB_REPOSITORY': 'test_repo',
+    'GITHUB_TOKEN': 'token'
+};
+
 Date.now = jest.fn().mockReturnValue(123);
 
 describe('Validate inputs', () => {
     afterEach(() => {
         jest.clearAllMocks();
-    });
-
-    test('Inputs should be validated successfully', () => {
-        // Input validation tests need to be run in isolation because inputs are read at the time when module gets imported
-        jest.isolateModules(() => {
-            const inputHelper = require('../src/inputHelper');
-            expect(inputHelper.validateRequiredInputs).not.toThrow();
-        });
     });
 
     test('Inputs validation should fail with no image input', () => {
@@ -39,6 +38,23 @@ describe('Validate inputs', () => {
             expect(inputHelper.validateRequiredInputs).toThrow();
         });
     });
+    
+    test('Inputs should be validated successfully', () => {
+        // Input validation tests need to be run in isolation because inputs are read at the time when module gets imported
+        jest.isolateModules(() => {
+            let __mockInputValues = {
+                'image-name': 'nginx',
+                'token': 'token',
+                'username': 'username',
+                'password': 'password',
+                'severity-threshold': 'HIGH',
+                'run-quality-checks': 'true'
+            }
+            mockedCore.__setMockInputValues(__mockInputValues);
+            const inputHelper = require('../src/inputHelper');
+            expect(inputHelper.validateRequiredInputs).not.toThrow();
+        });
+    });
 });
 
 describe('Run Trivy', () => {
@@ -49,11 +65,8 @@ describe('Run Trivy', () => {
         'trivy': true,
         'dockle': true
     };
-
-    beforeAll(() => {
-        mockedFs.__setMockFiles(mockFile);
-        mockedToolCache.__setToolCached(cachedTools);
-    });
+    mockedFs.__setMockFiles(mockFile);
+    mockedToolCache.__setToolCached(cachedTools);
 
     afterEach(() => {
         jest.clearAllMocks();
@@ -87,11 +100,8 @@ describe('Run Dockle', () => {
         'trivy': true,
         'dockle': true
     };
-
-    beforeAll(() => {
-        mockedFs.__setMockFiles(mockFile);
-        mockedToolCache.__setToolCached(cachedTools);
-    });
+    mockedFs.__setMockFiles(mockFile);
+    mockedToolCache.__setToolCached(cachedTools);
 
     afterEach(() => {
         jest.clearAllMocks();
@@ -172,32 +182,32 @@ describe('Initialize allowedlist file', () => {
     });
 });
 
-describe('Create scan report to test HTTP calls', () => {    
+describe('Create scan report to test HTTP calls', () => {
     afterEach(() => {
         jest.clearAllMocks();
     });
 
     test('When no vulnerabilities are detected', () => {
-        const util = require('../src/utils');
-        const inputHelper = require('../src/inputHelper');
-        expect(() => {
-            util.createScanResult(0, 0);
-        }).not.toThrow();
-
+        const util = require('../src/utils');     
+        util.createScanResult(0, 0);
+        expect(util.createScanResult).not.toThrow();
     });
 
     test('When vulnerabilities are detected', () => {
+        const util = require('../src/utils');
         let mockFile = {
             'test/_temp/containerscan_123': true,
             'test/_temp/containerscan_123/trivyoutput.json': JSON.stringify(testUtil.trivyOutput),
             'test/_temp/containerscan_123/dockleoutput.json': JSON.stringify(testUtil.dockleOutput)
         }
-        mockedFs.__setMockFiles(mockFile);
-        const util = require('../src/utils');
-        const inputHelper = require('../src/inputHelper');
-        expect(() => {
-            util.createScanResult(5,5);
-        }).not.toThrow();
-
+        mockedFs.__setMockFiles(mockFile);        
+        util.createScanResult(5, 5);
+        expect(util.createScanResult).not.toThrow();
     });
+});
+
+afterAll(() => {
+    jest.resetModules();
+    jest.restoreAllMocks();
+    process.env = env;
 });
