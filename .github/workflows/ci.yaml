@@ -2,9 +2,11 @@ name: "build-test"
 on: # rebuild any PRs and main branch changes
   pull_request:
     branches:
+      - master
       - 'releases/*'
   push:
     branches:
+      - master
       - 'releases/*'
 
 jobs:
@@ -19,4 +21,3 @@ jobs:
           npm install
           npm run build
           npm test
-          cat '/home/runner/work/_temp/_github_workflow/event.json'
