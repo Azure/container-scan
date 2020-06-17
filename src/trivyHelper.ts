@@ -34,15 +34,9 @@ const TITLE_DESCRIPTION = "DESCRIPTION";
 
 export async function runTrivy(): Promise<number> {
     const trivyPath = await getTrivy();
-    core.debug(util.format("Trivy executable found at path ", trivyPath));
-    const trivyEnv = await getTrivyEnvVariables();
 
     const imageName = inputHelper.imageName;
-    const trivyOptions: ExecOptions = {
-        env: trivyEnv,
-        ignoreReturnCode: true,
-        outStream: fs.createWriteStream(getTrivyLogPath())
-    };
+    const trivyOptions: ExecOptions = await getTrivyExecOptions();
     console.log("Scanning for vulnerabilties...");
     const trivyToolRunner = new ToolRunner(trivyPath, [imageName], trivyOptions);
     const trivyStatus = await trivyToolRunner.exec();
@@ -73,6 +67,7 @@ export async function getTrivy(): Promise<string> {
     const trivyToolPath = cachedToolPath + "/" + trivyToolName;
     fs.chmodSync(trivyToolPath, "777");
 
+    core.debug(util.format("Trivy executable found at path ", trivyToolPath));
     return trivyToolPath;
 }
 
@@ -289,4 +284,13 @@ function getTrivyDownloadUrl(trivyVersion: string): string {
         default:
             throw new Error(util.format("Container scanning is not supported on %s currently", curOS));
     }
+}
+
+async function getTrivyExecOptions() {    
+    const trivyEnv = await getTrivyEnvVariables();
+    return {
+        env: trivyEnv,
+        ignoreReturnCode: true,
+        outStream: fs.createWriteStream(getTrivyLogPath())
+    };
 }

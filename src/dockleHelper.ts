@@ -34,15 +34,9 @@ const TITLE_DESCRIPTION = "DESCRIPTION";
 
 export async function runDockle(): Promise<number> {
     const docklePath = await getDockle();
-    core.debug(util.format("Dockle executable found at path ", docklePath));
-    const dockleEnv = await getDockleEnvVariables();
     const imageName = inputHelper.imageName;
 
-    const dockleOptions: ExecOptions = {
-        env: dockleEnv,
-        ignoreReturnCode: true,
-        outStream: fs.createWriteStream(getDockleLogPath())
-    };
+    const dockleOptions: ExecOptions = await getDockleExecOptions();
     console.log("Scanning for CIS and best practice violations...");
     let dockleArgs = ['-f', 'json', '-o', getOutputPath(), '--exit-level', LEVEL_INFO, '--exit-code', DOCKLE_EXIT_CODE.toString(), imageName];
     const dockleToolRunner = new ToolRunner(docklePath, dockleArgs, dockleOptions);
@@ -73,6 +67,7 @@ export async function getDockle(): Promise<string> {
     const dockleToolPath = cachedToolPath + "/" + dockleToolName;
     fs.chmodSync(dockleToolPath, "777");
 
+    core.debug(util.format("Dockle executable found at path ", dockleToolPath));
     return dockleToolPath;
 }
 
@@ -218,6 +213,16 @@ function getDockleDownloadUrl(dockleVersion: string): string {
         default:
             throw new Error(util.format("Container scanning is not supported on %s currently", curOS));
     }
+}
+
+async function getDockleExecOptions()
+{
+    const dockleEnv = await getDockleEnvVariables();
+    return {
+        env: dockleEnv,
+        ignoreReturnCode: true,
+        outStream: fs.createWriteStream(getDockleLogPath())
+    };
 }
 
 export function printFormattedOutput() {
