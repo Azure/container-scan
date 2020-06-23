@@ -5,9 +5,12 @@ import * as toolCache from '@actions/tool-cache';
 import * as core from '@actions/core';
 import * as table from 'table';
 import * as semver from 'semver';
+import { ExecOptions } from '@actions/exec/lib/interfaces';
+import { ToolRunner } from '@actions/exec/lib/toolrunner';
 import * as fileHelper from './fileHelper';
 import * as inputHelper from './inputHelper';
 import * as utils from './utils';
+import * as allowedlistHandler from './allowedlistHandler';
 
 export const TRIVY_EXIT_CODE = 5;
 export const trivyToolName = "trivy";
@@ -28,6 +31,18 @@ const TITLE_VULNERABILITY_ID = "VULNERABILITY ID";
 const TITLE_PACKAGE_NAME = "PACKAGE NAME";
 const TITLE_SEVERITY = "SEVERITY";
 const TITLE_DESCRIPTION = "DESCRIPTION";
+
+export async function runTrivy(): Promise<number> {
+    const trivyPath = await getTrivy();
+
+    const imageName = inputHelper.imageName;
+    const trivyOptions: ExecOptions = await getTrivyExecOptions();
+    console.log("Scanning for vulnerabilties...");
+    const trivyToolRunner = new ToolRunner(trivyPath, [imageName], trivyOptions);
+    const trivyStatus = await trivyToolRunner.exec();
+    utils.addLogsToDebug(getTrivyLogPath());
+    return trivyStatus;
+}
 
 export async function getTrivy(): Promise<string> {
     const latestTrivyVersion = await getLatestTrivyVersion();
@@ -52,6 +67,7 @@ export async function getTrivy(): Promise<string> {
     const trivyToolPath = cachedToolPath + "/" + trivyToolName;
     fs.chmodSync(trivyToolPath, "777");
 
+    core.debug(util.format("Trivy executable found at path ", trivyToolPath));
     return trivyToolPath;
 }
 
@@ -177,6 +193,34 @@ export function getFilteredOutput(): any {
     return filteredVulnerabilities;
 }
 
+async function getTrivyEnvVariables(): Promise<{ [key: string]: string }> {
+    let trivyEnv: { [key: string]: string } = {};
+    for (let key in process.env) {
+        trivyEnv[key] = process.env[key] || "";
+    }
+
+    const username = inputHelper.username;
+    const password = inputHelper.password;
+    if (username && password) {
+        trivyEnv["TRIVY_USERNAME"] = username;
+        trivyEnv["TRIVY_PASSWORD"] = password;
+    }
+
+    trivyEnv["TRIVY_EXIT_CODE"] = TRIVY_EXIT_CODE.toString();
+    trivyEnv["TRIVY_FORMAT"] = "json";
+    trivyEnv["TRIVY_OUTPUT"] = getOutputPath();
+    trivyEnv["GITHUB_TOKEN"] = inputHelper.githubToken;
+
+    if (allowedlistHandler.trivyAllowedlistExists) {
+        trivyEnv["TRIVY_IGNOREFILE"] = allowedlistHandler.getTrivyAllowedlist();
+    }
+
+    const severities = getSeveritiesToInclude(true);
+    trivyEnv["TRIVY_SEVERITY"] = severities.join(',');
+
+    return trivyEnv;
+}
+
 function getVulnerabilityIdsBySeverity(trivyStatus: number, removeDuplicates?: boolean): any {
     const severities = getSeveritiesToInclude();
     let vulnerabilityIdsBySeverity: any = {};
@@ -240,4 +284,13 @@ function getTrivyDownloadUrl(trivyVersion: string): string {
         default:
             throw new Error(util.format("Container scanning is not supported on %s currently", curOS));
     }
+}
+
+async function getTrivyExecOptions() {    
+    const trivyEnv = await getTrivyEnvVariables();
+    return {
+        env: trivyEnv,
+        ignoreReturnCode: true,
+        outStream: fs.createWriteStream(getTrivyLogPath())
+    };
 }
