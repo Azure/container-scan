@@ -98,7 +98,11 @@ export function addLogsToDebug(outputPath: string) {
 function getCheckRunPayload(trivyStatus: number, dockleStatus: number): any {
   const headSha = gitHubHelper.getHeadSha();
   const checkConclusion = getCheckConclusion(trivyStatus, dockleStatus);
-  const checkSummary = getCheckSummary(trivyStatus, dockleStatus);
+  let checkSummary = getCheckSummary(trivyStatus, dockleStatus);
+
+  let appHyperlink = `<a href=${APP_LINK}>${APP_NAME}</a>`;
+  checkSummary = `${checkSummary}\n\nFor a better experience with managing allowedlist, install ${appHyperlink} app.`
+
   const checkText = getCheckText(trivyStatus, dockleStatus);
 
   const payload = {
@@ -153,9 +157,6 @@ function getCheckSummary(trivyStatus: number, dockleStatus: number): string {
     const dockleSummary = dockleHelper.getSummary(dockleStatus);
     summary = `${summary}\n\n${dockleSummary}`;
   }
-
-  let appHyperlink = `<a href=${APP_LINK}>${APP_NAME}</a>`;
-  summary = `${summary}\n\nFor a better experience with managing allowedlist, install ${appHyperlink} app.`
 
   return summary;
 }
