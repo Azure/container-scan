@@ -8,6 +8,9 @@ import * as fileHelper from './fileHelper';
 import { GitHubClient } from './githubClient';
 import { StatusCodes } from "./httpClient";
 
+const APP_NAME = 'Scanitizer';
+const APP_LINK = 'https://github.com/apps/scanitizer';
+
 export async function createScanResult(trivyStatus: number, dockleStatus: number): Promise<void> {
   const gitHubClient = new GitHubClient(process.env.GITHUB_REPOSITORY, inputHelper.githubToken);
   const scanResultPayload = getScanResultPayload(trivyStatus, dockleStatus);
@@ -19,6 +22,8 @@ export async function createScanResult(trivyStatus: number, dockleStatus: number
     && response.body.message.error_code === 'APP_NOT_INSTALLED') {
     // If the app is not installed, try to create the check run using GitHub actions token.
     console.log('Looks like the scanitizer app is not installed on the repo. Falling back to check run creation through GitHub actions app...');
+    console.log(`For a better experience with managing allowedlist, install ${APP_NAME} app from ${APP_LINK}.`);
+    
     const checkRunPayload = getCheckRunPayload(trivyStatus, dockleStatus);
     await gitHubClient.createCheckRun(checkRunPayload);
   }
@@ -93,7 +98,11 @@ export function addLogsToDebug(outputPath: string) {
 function getCheckRunPayload(trivyStatus: number, dockleStatus: number): any {
   const headSha = gitHubHelper.getHeadSha();
   const checkConclusion = getCheckConclusion(trivyStatus, dockleStatus);
-  const checkSummary = getCheckSummary(trivyStatus, dockleStatus);
+  let checkSummary = getCheckSummary(trivyStatus, dockleStatus);
+
+  let appHyperlink = `<a href=${APP_LINK}>${APP_NAME}</a>`;
+  checkSummary = `${checkSummary}\n\nFor a better experience with managing allowedlist, install ${appHyperlink} app.`
+
   const checkText = getCheckText(trivyStatus, dockleStatus);
 
   const payload = {
