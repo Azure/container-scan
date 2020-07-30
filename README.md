@@ -64,6 +64,7 @@ general:
     - CIS-DI-0006
     - DKL-DI-0006
 ```
+Install [Scanitizer](https://github.com/apps/scanitizer) (currently in Beta) on your repository for more convenient management of allowedlist file.
 
 ## Example YAML snippets
 
