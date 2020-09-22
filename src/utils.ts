@@ -44,6 +44,7 @@ export function getScanReport(trivyStatus: number, dockleStatus: number): string
   if (inputHelper.isRunQualityChecksEnabled() && dockleStatus === dockleHelper.DOCKLE_EXIT_CODE)
     dockleOutput = dockleHelper.getFilteredOutput();
   const scanReportObject = {
+    "imageName": inputHelper.imageName,
     "vulnerabilities": trivyOutput,
     "bestPracticeViolations": dockleOutput
   };
