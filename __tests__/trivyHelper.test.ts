@@ -28,7 +28,9 @@ describe('Run Trivy', () => {
 
     test('Trivy binaries are present in the cache', async () => {
         const runner = require('../src/trivyHelper');
-        await expect(runner.runTrivy()).resolves.toBe(0);
+        const trivyResult = await runner.runTrivy();
+        expect(trivyResult).toHaveProperty('status', 0);
+        expect(trivyResult).toHaveProperty('timestamp');
         expect(mockedOs.type).not.toHaveBeenCalled();
         expect(mockedToolCache.find).not.toHaveReturnedWith(undefined);
         expect(mockedToolCache.downloadTool).toHaveBeenCalledTimes(1);
@@ -39,7 +41,9 @@ describe('Run Trivy', () => {
         mockedToolCache.__setToolCached(cachedTools);
         const runner = require('../src/trivyHelper');
 
-        await expect(runner.runTrivy()).resolves.toBe(0);
+        const trivyResult = await runner.runTrivy();
+        expect(trivyResult).toHaveProperty('status', 0);
+        expect(trivyResult).toHaveProperty('timestamp');
         expect(mockedOs.type).toHaveBeenCalledTimes(1);
         expect(mockedToolCache.find).toHaveReturnedWith(undefined);
         expect(mockedToolCache.downloadTool).toHaveBeenCalledTimes(2);

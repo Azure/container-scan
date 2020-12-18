@@ -32,16 +32,27 @@ const TITLE_PACKAGE_NAME = "PACKAGE NAME";
 const TITLE_SEVERITY = "SEVERITY";
 const TITLE_DESCRIPTION = "DESCRIPTION";
 
-export async function runTrivy(): Promise<number> {
+export interface TrivyResult {
+    status: number;
+    timestamp: string;
+};
+
+export async function runTrivy(): Promise<TrivyResult> {
     const trivyPath = await getTrivy();
 
     const imageName = inputHelper.imageName;
     const trivyOptions: ExecOptions = await getTrivyExecOptions();
     console.log("Scanning for vulnerabilties...");
     const trivyToolRunner = new ToolRunner(trivyPath, [imageName], trivyOptions);
+    const timestamp = new Date().toISOString();
     const trivyStatus = await trivyToolRunner.exec();
     utils.addLogsToDebug(getTrivyLogPath());
-    return trivyStatus;
+    const trivyResult: TrivyResult = {
+        status: trivyStatus,
+        timestamp: timestamp
+    };
+
+    return trivyResult;
 }
 
 export async function getTrivy(): Promise<string> {
