@@ -8,7 +8,9 @@ import * as utils from './utils';
 export async function run(): Promise<void> {
     inputHelper.validateRequiredInputs();
     allowedlistHandler.init();
-    const trivyStatus = await trivyHelper.runTrivy();
+    const trivyResult = await trivyHelper.runTrivy();
+    const trivyStatus = trivyResult.status;
+
     if (trivyStatus === trivyHelper.TRIVY_EXIT_CODE) {
         trivyHelper.printFormattedOutput();
     } else if (trivyStatus === 0) {
@@ -43,7 +45,7 @@ export async function run(): Promise<void> {
         core.warning(`An error occured while creating the check run for container scan. Error: ${error}`);
     }
 
-    const scanReportPath = utils.getScanReport(trivyStatus, dockleStatus);
+    const scanReportPath = utils.getScanReport(trivyResult, dockleStatus);
     core.setOutput('scan-report-path', scanReportPath);
 
     if (trivyStatus == trivyHelper.TRIVY_EXIT_CODE) {
