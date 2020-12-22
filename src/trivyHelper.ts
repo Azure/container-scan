@@ -152,7 +152,7 @@ export function printFormattedOutput() {
         rows.push(row);
     });
 
-    let widths = [25, 20, 15, 60];
+    let widths = [20, 15, 15, 50, 20];
     console.log(table.table(rows, utils.getConfigForTable(widths)));
 }
 
