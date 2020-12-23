@@ -16,6 +16,7 @@ export const TRIVY_EXIT_CODE = 5;
 export const trivyToolName = "trivy";
 const stableTrivyVersion = "0.5.2";
 const trivyLatestReleaseUrl = "https://api.github.com/repos/aquasecurity/trivy/releases/latest";
+const KEY_TARGET = "Target";
 const KEY_VULNERABILITIES = "Vulnerabilities";
 const KEY_VULNERABILITY_ID = "VulnerabilityID";
 const KEY_PACKAGE_NAME = "PkgName";
@@ -31,6 +32,7 @@ const TITLE_VULNERABILITY_ID = "VULNERABILITY ID";
 const TITLE_PACKAGE_NAME = "PACKAGE NAME";
 const TITLE_SEVERITY = "SEVERITY";
 const TITLE_DESCRIPTION = "DESCRIPTION";
+const TITLE_TARGET = "TARGET";
 
 export interface TrivyResult {
     status: number;
@@ -136,7 +138,7 @@ export function getSummary(trivyStatus: number): string {
 
 export function printFormattedOutput() {
     let rows = [];
-    let titles = [TITLE_VULNERABILITY_ID, TITLE_PACKAGE_NAME, TITLE_SEVERITY, TITLE_DESCRIPTION];
+    let titles = [TITLE_VULNERABILITY_ID, TITLE_PACKAGE_NAME, TITLE_SEVERITY, TITLE_DESCRIPTION, TITLE_TARGET];
     rows.push(titles);
 
     const vulnerabilities = getVulnerabilities();
@@ -146,10 +148,11 @@ export function printFormattedOutput() {
         row.push(cve[KEY_PACKAGE_NAME]);
         row.push(cve[KEY_SEVERITY]);
         row.push(cve[KEY_DESCRIPTION]);
+        row.push(cve[KEY_TARGET]);
         rows.push(row);
     });
 
-    let widths = [25, 20, 15, 60];
+    let widths = [20, 15, 15, 50, 20];
     console.log(table.table(rows, utils.getConfigForTable(widths)));
 }
 
@@ -197,7 +200,8 @@ export function getFilteredOutput(): any {
             "vulnerabilityId": cve[KEY_VULNERABILITY_ID],
             "packageName": cve[KEY_PACKAGE_NAME],
             "severity": cve[KEY_SEVERITY],
-            "description": cve[KEY_DESCRIPTION]
+            "description": cve[KEY_DESCRIPTION],
+            "target": cve[KEY_TARGET]
         };
         filteredVulnerabilities.push(vulnObject);
     });
@@ -258,8 +262,10 @@ function getVulnerabilities(removeDuplicates?: boolean): any[] {
     let vulnerabilities: any[] = [];
     trivyOutputJson.forEach((ele: any) => {
         if (ele && ele[KEY_VULNERABILITIES]) {
+            let target = ele[KEY_TARGET];
             ele[KEY_VULNERABILITIES].forEach((cve: any) => {
                 if (!removeDuplicates || !vulnerabilities.some(v => v[KEY_VULNERABILITY_ID] === cve[KEY_VULNERABILITY_ID])) {
+                    cve[KEY_TARGET] = target;
                     vulnerabilities.push(cve);
                 }
             });
