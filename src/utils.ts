@@ -15,7 +15,7 @@ export async function createScanResult(trivyStatus: number, dockleStatus: number
   const gitHubClient = new GitHubClient(process.env.GITHUB_REPOSITORY, inputHelper.githubToken);
   const scanResultPayload = getScanResultPayload(trivyStatus, dockleStatus);
   const response = await gitHubClient.createScanResult(scanResultPayload);
-  
+
   if (response.statusCode == StatusCodes.UNPROCESSABLE_ENTITY
     && response.body
     && response.body.message
@@ -23,7 +23,7 @@ export async function createScanResult(trivyStatus: number, dockleStatus: number
     // If the app is not installed, try to create the check run using GitHub actions token.
     console.log('Looks like the scanitizer app is not installed on the repo. Falling back to check run creation through GitHub actions app...');
     console.log(`For a better experience with managing allowedlist, install ${APP_NAME} app from ${APP_LINK}.`);
-    
+
     const checkRunPayload = getCheckRunPayload(trivyStatus, dockleStatus);
     await gitHubClient.createCheckRun(checkRunPayload);
   }
@@ -55,25 +55,17 @@ export function getScanReport(trivyResult: trivyHelper.TrivyResult, dockleStatus
 }
 
 export function getConfigForTable(widths: number[]): any {
+  var columns = {};
+  let index = 0;
+  widths.forEach(width => {
+    columns[index.toString()] = {
+      width: width,
+      wrapWord: true
+    };
+    index = index + 1;
+  });
   let config = {
-    columns: {
-      0: {
-        width: widths[0],
-        wrapWord: true
-      },
-      1: {
-        width: widths[1],
-        wrapWord: true
-      },
-      2: {
-        width: widths[2],
-        wrapWord: true
-      },
-      3: {
-        width: widths[3],
-        wrapWord: true
-      }
-    }
+    columns: columns
   };
 
   return config;
