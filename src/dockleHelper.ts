@@ -91,7 +91,7 @@ export function getSummary(dockleStatus: number): string {
             summary = getCisSummary();
             break;
         default:
-            summary = 'An error occured while scanning the container image for CIS benchmark violations.';
+            summary = 'An error occurred while scanning the container image for CIS benchmark violations.';
             break;
     }
 

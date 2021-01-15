@@ -20,7 +20,7 @@ export async function run(): Promise<void> {
         errors.forEach(err => {
             core.error(err);
         });
-        throw new Error("An error occured while scanning the container image for vulnerabilities");
+        throw new Error("An error occurred while scanning the container image for vulnerabilities");
     }
 
     let dockleStatus: number;
@@ -35,14 +35,14 @@ export async function run(): Promise<void> {
             errors.forEach(err => {
                 core.error(err);
             });
-            throw new Error("An error occured while scanning the container image for best practice violations");
+            throw new Error("An error occurred while scanning the container image for best practice violations");
         }
     }
 
     try {
         await utils.createScanResult(trivyStatus, dockleStatus);
     } catch (error) {
-        core.warning(`An error occured while creating the check run for container scan. Error: ${error}`);
+        core.warning(`An error occurred while creating the check run for container scan. Error: ${error}`);
     }
 
     const scanReportPath = utils.getScanReport(trivyResult, dockleStatus);

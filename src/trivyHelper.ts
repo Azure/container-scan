@@ -129,7 +129,7 @@ export function getSummary(trivyStatus: number): string {
             summary = `Found ${total} vulnerabilities -${summaryDetails}`;
             break;
         default:
-            summary = 'An error occured while scanning the container image for vulnerabilities';
+            summary = 'An error occurred while scanning the container image for vulnerabilities';
             break;
     }
 
