@@ -28,7 +28,7 @@ export async function createScanResult(trivyStatus: number, dockleStatus: number
     await gitHubClient.createCheckRun(checkRunPayload);
   }
   else if (response.statusCode != StatusCodes.OK) {
-    throw Error(`An error occured while creating scan result. Statuscode: ${response.statusCode}, StatusMessage: ${response.statusMessage}, head_sha: ${scanResultPayload['head_sha']}`);
+    throw Error(`An error occurred while creating scan result. Statuscode: ${response.statusCode}, StatusMessage: ${response.statusMessage}, head_sha: ${scanResultPayload['head_sha']}`);
   }
   else {
     console.log(`Created scan result. Url: ${response.body['check_run']['html_url']}`);
