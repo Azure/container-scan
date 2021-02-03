@@ -73,7 +73,7 @@ Install [Scanitizer](https://github.com/apps/scanitizer) (currently in Beta) on 
 ```yaml
 - uses: azure/container-scan@v0
   with:
-    image-name: my-image
+    image-name: my-image:${{ github.sha }}
 ```
 
 ### Container scan of an image available on a private registry
@@ -81,12 +81,21 @@ Install [Scanitizer](https://github.com/apps/scanitizer) (currently in Beta) on 
 ```yaml
 - uses: azure/container-scan@v0
   with:
-    image-name: loginServerUrl/my-image # loginServerlUrl would be empty if it's hosted on dockerhub
+    image-name: loginServerUrl/my-image:${{ github.sha }} # loginServerlUrl would be empty if it's hosted on dockerhub
     username: ${{ secrets.DOCKER_USERNAME }}
     password: ${{ secrets.DOCKER_PASSWORD }}
 ```
 
-## End to end workflow
+### Container scan of an image available locally, publically, or privately using workflow environment variables
+```yaml
+- uses: azure/container-scan@v0
+  with:
+    image-name: ${{ env.loginServerUrl }}/my-image:${{ github.sha }} # loginServerlUrl would be empty if it's hosted on dockerhub
+    username: ${{ secrets.DOCKER_USERNAME }}
+    password: ${{ secrets.DOCKER_PASSWORD }}
+```
+
+## End to end workflow using Azure
 
 The following is an example of not just this action, but how this action could be used along with other  actions to setup a CI. 
 
@@ -117,6 +126,40 @@ jobs:
         password: ${{ secrets.REGISTRY_PASSWORD }}
     
     - run: docker push contoso.azurecr.io/k8sdemo:${{ github.sha }}
+```
+## End to end workflow using any container repository and workflow environment variables
+
+The following is an example of not just this action, but how this action could be used along with other  actions to setup a CI. 
+
+Where your CI would:
+- Build a docker image 
+- Scan the docker image for any security vulnerabilities
+- Publish it to your preferred container registry.
+
+This example assumes you have defined an evironment variable in your workflow for `CONTAINER_REGISTRY`.
+
+```yaml
+on: [push]
+
+jobs:
+  build-secure-and-push:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+
+    - run: docker build . -t ${{ env.CONTAINER_REGISTRY }}/k8sdemo:${{ github.sha }}
+      
+    - uses: Azure/container-scan@v0
+      with:
+        image-name: ${{ env.CONTAINER_REGISTRY }}/k8sdemo:${{ github.sha }}
+    
+    - uses: Azure/docker-login@v1
+      with:
+        login-server: ${{ env.CONTAINER_REGISTRY }}
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+    
+    - run: docker push ${{ env.CONTAINER_REGISTRY }}/k8sdemo:${{ github.sha }}
 ```
 
 # Contributing
