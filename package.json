@@ -14,8 +14,9 @@
     "@types/jest": "25.2.3",
     "@types/js-yaml": "3.12.1",
     "@types/node": "13.7.7",
-    "jest": "26.0.1",
+    "jest": "26.6.3",
     "ts-jest": "26.0.0",
+    "ts-node": "^9.1.1",
     "typescript": "3.8.3"
   },
   "dependencies": {
