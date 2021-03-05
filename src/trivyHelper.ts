@@ -70,7 +70,7 @@ export async function getTrivy(): Promise<string> {
         try {
             trivyDownloadPath = await toolCache.downloadTool(trivyDownloadUrl, trivyDownloadDir);
         } catch (error) {
-            throw new Error(util.format("Failed to download trivy from %s", trivyDownloadUrl));
+            throw new Error(util.format("Failed to download trivy from %s: %s", trivyDownloadUrl, error.toString()));
         }
 
         const untarredTrivyPath = await toolCache.extractTar(trivyDownloadPath);
