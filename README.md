@@ -129,7 +129,7 @@ jobs:
 ```
 ## End to end workflow using any container repository and workflow environment variables
 
-The following is an example of not just this action, but how this action could be used along with other  actions to setup a CI. 
+The following is an example of not just this action, but how this action could be used along with other actions to setup a CI. 
 
 Where your CI would:
 - Build a docker image 
