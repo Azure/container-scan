@@ -73,7 +73,7 @@ Install [Scanitizer](https://github.com/apps/scanitizer) (currently in Beta) on 
 ```yaml
 - uses: azure/container-scan@v0
   with:
-    image-name: my-image:${{ github.sha }}
+    image-name: my-image:my-tag
 ```
 
 ### Container scan of an image available on a private registry
@@ -81,7 +81,7 @@ Install [Scanitizer](https://github.com/apps/scanitizer) (currently in Beta) on 
 ```yaml
 - uses: azure/container-scan@v0
   with:
-    image-name: loginServerUrl/my-image:${{ github.sha }} # loginServerlUrl would be empty if it's hosted on dockerhub
+    image-name: loginServerUrl/my-image:${{ github.sha }} # loginServerlUrl/ would be empty if it's hosted on dockerhub; ${{ github.sha }} could also be replaced with any desired image tag
     username: ${{ secrets.DOCKER_USERNAME }}
     password: ${{ secrets.DOCKER_PASSWORD }}
 ```
@@ -90,7 +90,7 @@ Install [Scanitizer](https://github.com/apps/scanitizer) (currently in Beta) on 
 ```yaml
 - uses: azure/container-scan@v0
   with:
-    image-name: ${{ env.loginServerUrl }}/my-image:${{ github.sha }} # loginServerlUrl would be empty if it's hosted on dockerhub
+    image-name: ${{ env.loginServerUrl }}/my-image:${{ github.sha }} # ${{ env.loginServerUrl }}/ would be empty if it's hosted on dockerhub; ${{ github.sha }} could also be replaced with any desired image tag
     username: ${{ secrets.DOCKER_USERNAME }}
     password: ${{ secrets.DOCKER_PASSWORD }}
 ```

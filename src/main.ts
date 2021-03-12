@@ -17,13 +17,11 @@ export async function run(): Promise<void> {
         console.log("No vulnerabilities were detected in the container image");
     } else {
         const errors = utils.extractErrorsFromLogs(trivyHelper.getTrivyLogPath(), trivyHelper.trivyToolName);
-        
-        console.log(errors);
 
         errors.forEach(err => {
             core.error(err);
         });
-        throw new Error("An error occurred while scanning container image: " + inputHelper.imageName + " for vulnerabilities. Please check your image name and try again.");
+        throw new Error(`An error occurred while scanning container image: ${inputHelper.imageName} for vulnerabilities.`);
     }
 
     let dockleStatus: number;
