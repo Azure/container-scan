@@ -46,7 +46,51 @@ It internally uses `Trivy` and `Dockle` for running certain kinds of scans on th
 </table>
 
 ## Action output
-The action generates an output file consisting of detailed description of all the detected vulnerabilities and best practice violations in JSON format. This file can be accessed by using the output variable `scan-report-path`.
+The action generates an output file consisting of detailed description of all the detected vulnerabilities and best practice violations in JSON format. This file can be accessed by using the output variable `scan-report-path`.  
+Here is a sample scan report:
+```json
+{
+  "imageName": "myacr.azurecr.io/testapp:770aed6bd33d7240b4bdb55f16348ce37b86bb09",
+  "vulnerabilities": [
+    {
+      "vulnerabilityId": "CVE-2018-12886",
+      "packageName": "gcc-8-base",
+      "severity": "HIGH",
+      "description": "stack_protect_prologue in cfgexpand.c and stack_protect_epilogue in function.c in GNU Compiler Collection (GCC) 4.1 through 8 (under certain circumstances) generate instruction sequences when targeting ARM targets that spill the address of the stack protector guard, which allows an attacker to bypass the protection of -fstack-protector, -fstack-protector-all, -fstack-protector-strong, and -fstack-protector-explicit against stack overflow by controlling what the stack canary is compared against.",
+      "target": "myacr.azurecr.io/ascdemo:770aed6bd33d7240b4bdb55f16348ce37b86bb09 (debian 10.4)"
+    },
+    {
+      "vulnerabilityId": "CVE-2019-20367",
+      "packageName": "libbsd0",
+      "severity": "CRITICAL",
+      "description": "nlist.c in libbsd before 0.10.0 has an out-of-bounds read during a comparison for a symbol name from the string table (strtab).",
+      "target": "myacr.azurecr.io/ascdemo:770aed6bd33d7240b4bdb55f16348ce37b86bb09 (debian 10.4)"
+    },
+    {
+      "vulnerabilityId": "CVE-2020-1751",
+      "packageName": "libc-bin",
+      "severity": "HIGH",
+      "description": "An out-of-bounds write vulnerability was found in glibc before 2.31 when handling signal trampolines on PowerPC. Specifically, the backtrace function did not properly check the array bounds when storing the frame address, resulting in a denial of service or potential code execution. The highest threat from this vulnerability is to system availability.",
+      "target": "myacr.azurecr.io/ascdemo:770aed6bd33d7240b4bdb55f16348ce37b86bb09 (debian 10.4)"
+    }
+  ],
+  "bestPracticeViolations": [
+    {
+      "code": "CIS-DI-0001",
+      "title": "Create a user for the container",
+      "level": "WARN",
+      "alerts": "Last user should not be root"
+    },
+    {
+      "code": "CIS-DI-0005",
+      "title": "Enable Content trust for Docker",
+      "level": "INFO",
+      "alerts": "export DOCKER_CONTENT_TRUST=1 before docker pull/build"
+    }
+  ],
+  "vulnerabilityScanTimestamp": "2021-03-05T09:38:48.036Z"
+}
+```
 
 ## Ignoring vulnerabilities
 In case you would like the action to ignore any vulnerabilities and best practice checks, create an allowedlist file at the path `.github/containerscan/allowedlist.yaml` in your repo. Here's an example allowedlist.yaml file.
