@@ -1,4 +1,4 @@
-# Container Scan
+# Container Scan 
 
 This action can be used to help you add some additional checks to help you secure your Docker Images in your  CI. This would help you attain some confidence in your docker image before pushing them to your container registry or a deployment.
 
