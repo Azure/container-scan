@@ -44,7 +44,7 @@ export async function runTrivy(): Promise<TrivyResult> {
 
     const imageName = inputHelper.imageName;
     const trivyOptions: ExecOptions = await getTrivyExecOptions();
-    console.log("Scanning for vulnerabilties...");
+    console.log(`Scanning for vulnerabilties in image: ${imageName}`);
     const trivyToolRunner = new ToolRunner(trivyPath, [imageName], trivyOptions);
     const timestamp = new Date().toISOString();
     const trivyStatus = await trivyToolRunner.exec();
@@ -53,7 +53,6 @@ export async function runTrivy(): Promise<TrivyResult> {
         status: trivyStatus,
         timestamp: timestamp
     };
-
     return trivyResult;
 }
 
