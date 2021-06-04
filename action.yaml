@@ -26,6 +26,8 @@ inputs:
 outputs:
   scan-report-path:
     description: 'File path where the scan results are stored'
+  check-run-url:
+    description: 'URL of the check run. Overview about finding of vulnerabilities and best-practices.'
 
 runs:
   using: 'node12'
