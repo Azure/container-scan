@@ -1,4 +1,4 @@
-name: "build-test"
+name: "Run unit tests."
 on: # rebuild any PRs and main branch changes
   pull_request:
     branches:
@@ -17,7 +17,7 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '10'
-      - run: |
+      - name: Running L0 tests.
+        run: |
           npm install
-          npm run build
           npm test
