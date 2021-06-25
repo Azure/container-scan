@@ -1,0 +1,30 @@
+name: setting-default-labels
+
+on:
+  schedule:
+  - cron: "0 0/3 * * *"
+
+jobs:
+  label-issues:
+    runs-on: ubuntu-latest
+    steps:          
+      - uses: actions/stale@v3
+        name: Setting issue as idle
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          stale-issue-message: 'This issue is idle because it has been open for 14 days with no activity.'
+          stale-issue-label: 'idle'
+          days-before-stale: 14
+          days-before-close: -1
+          operations-per-run: 100
+          exempt-issue-labels: 'backlog'
+          
+      - uses: actions/stale@v3
+        name: Setting PR as idle
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          stale-pr-message: 'This PR is idle because it has been open for 14 days with no activity.'
+          stale-pr-label: 'idle'
+          days-before-stale: 14
+          days-before-close: -1
+          operations-per-run: 100
