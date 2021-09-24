@@ -8,6 +8,8 @@ It internally uses `Trivy` and `Dockle` for running certain kinds of scans on th
   - Certain best practices while building the image 
   - [CIS Benchmarks](https://www.cisecurity.org/cis-benchmarks/) to secure your docker image
 
+Please checkout [Trivy](https://github.com/aquasecurity/trivy/blob/main/LICENSE) and [Dockle](https://github.com/goodwithtech/dockle/blob/master/LICENSE) licenses.
+
 ## Action inputs
 
 <table>
