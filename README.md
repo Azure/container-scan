@@ -8,6 +8,8 @@ It internally uses `Trivy` and `Dockle` for running certain kinds of scans on th
   - Certain best practices while building the image 
   - [CIS Benchmarks](https://www.cisecurity.org/cis-benchmarks/) to secure your docker image
 
+Please checkout [Trivy](https://github.com/aquasecurity/trivy/blob/main/LICENSE) and [Dockle](https://github.com/goodwithtech/dockle/blob/master/LICENSE) licenses.
+
 ## Action inputs
 
 <table>
@@ -219,8 +221,3 @@ provided by the bot. You will only need to do this once across all repos using o
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
-
-# Disclaimer
-
-This action uses [Trivy](https://github.com/aquasecurity/trivy) for container scanning.
-Trivy uses vulnerability information from a variety of sources, some of which are licensed for non-commercial use only.
