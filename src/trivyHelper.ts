@@ -259,7 +259,7 @@ function getTrivyOutput(): any {
 function getVulnerabilities(removeDuplicates?: boolean): any[] {
     const trivyOutputJson = getTrivyOutput();
     let vulnerabilities: any[] = [];
-    trivyOutputJson.forEach((ele: any) => {
+    trivyOutputJson.Results.forEach((ele: any) => {
         if (ele && ele[KEY_VULNERABILITIES]) {
             let target = ele[KEY_TARGET];
             ele[KEY_VULNERABILITIES].forEach((cve: any) => {
