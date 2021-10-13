@@ -3,6 +3,7 @@ const actionsCore = jest.requireActual('@actions/core');
 let __mockInputValues = {
     'image-name': 'nginx',
     'token': 'token',
+    'timeout': '2',
     'username': 'username',
     'password': 'password',
     'severit-threshold': 'HIGH',

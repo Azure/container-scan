@@ -8,6 +8,10 @@ inputs:
     description: '(Optional) Minimum severity threshold set to control flagging of the vulnerabilities found during the scan. The available levels are: (UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL); if you set the severity-threshold to be `MEDIUM` every CVE found of a level higher than or equal to `MEDIUM` would be displayed'
     required: false
     default: 'HIGH'
+  timeout:
+    description: 'Timeout for Trivy image scan'
+    required: false
+    default: '5'
   username:
     description: 'Username to authenticate to the Docker registry'
     required: false
