@@ -38,7 +38,7 @@ Please checkout [Trivy](https://github.com/aquasecurity/trivy/blob/main/LICENSE)
   <tr>
     <td><code>timeout</code></td>
     <td>(Optional) Timeout in minutes for Trivy image scan.</td>
-    <td>5</td>
+    <td>''</td>
   </tr>
   <tr>
     <td><code>username</code></td>

@@ -28,7 +28,6 @@ describe('Validate inputs', () => {
             let __mockInputValues = {
                 'image-name': 'nginx',
                 'token': 'token',
-                'timeout': '4',
                 'username': 'username',
                 'password': 'password',
                 'severity-threshold': 'HIGH',

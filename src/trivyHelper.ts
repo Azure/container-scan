@@ -224,7 +224,11 @@ async function getTrivyEnvVariables(): Promise<{ [key: string]: string }> {
     trivyEnv["TRIVY_FORMAT"] = "json";
     trivyEnv["TRIVY_OUTPUT"] = getOutputPath();
     trivyEnv["GITHUB_TOKEN"] = inputHelper.githubToken;
-    trivyEnv["TRIVY_TIMEOUT"] = inputHelper.timeout
+
+    const timeout = inputHelper.timeout
+    if (timeout) {
+        trivyEnv["TRIVY_TIMEOUT"] = timeout
+    }
 
     if (allowedlistHandler.trivyAllowedlistExists) {
         trivyEnv["TRIVY_IGNOREFILE"] = allowedlistHandler.getTrivyAllowedlist();

@@ -11,7 +11,6 @@ inputs:
   timeout:
     description: 'Timeout for Trivy image scan'
     required: false
-    default: '5'
   username:
     description: 'Username to authenticate to the Docker registry'
     required: false
