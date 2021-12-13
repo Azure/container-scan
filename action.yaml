@@ -4,6 +4,10 @@ inputs:
   image-name:
     description: 'Docker image to scan'
     required: true
+  run-vuln-checks:
+    description: 'Run vulnerability checks'
+    required: false
+    default: true
   severity-threshold:
     description: '(Optional) Minimum severity threshold set to control flagging of the vulnerabilities found during the scan. The available levels are: (UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL); if you set the severity-threshold to be `MEDIUM` every CVE found of a level higher than or equal to `MEDIUM` would be displayed'
     required: false
