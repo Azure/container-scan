@@ -261,10 +261,21 @@ function getTrivyOutput(): any {
     return fileHelper.getFileJson(path);
 }
 
+function isOldTrivyJson(trivyOutputJson: any): boolean {
+    return Array.isArray(trivyOutputJson);
+}
+
+function getTrivyResult(trivyOutputJson: any): any {
+    return isOldTrivyJson(trivyOutputJson)
+        ? trivyOutputJson
+        : trivyOutputJson["Results"];
+}
+
 function getVulnerabilities(removeDuplicates?: boolean): any[] {
     const trivyOutputJson = getTrivyOutput();
     let vulnerabilities: any[] = [];
-    trivyOutputJson.forEach((ele: any) => {
+    const trivyResult = getTrivyResult(trivyOutputJson);
+    trivyResult.forEach((ele: any) => {
         if (ele && ele[KEY_VULNERABILITIES]) {
             let target = ele[KEY_TARGET];
             ele[KEY_VULNERABILITIES].forEach((cve: any) => {
