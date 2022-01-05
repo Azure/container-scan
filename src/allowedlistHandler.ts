@@ -22,10 +22,11 @@ function initializeDockleAllowedlistPath() {
     dockleAllowedlistPath = `${process.env['GITHUB_WORKSPACE']}/.dockleignore`;
 }
 
-export function init() {
-    let allowedlistFilePath = `${process.env['GITHUB_WORKSPACE']}/.github/containerscan/allowedlist.yaml`;
+export function init(allowedlistInput) {
+    let allowedlistFilePath = `${process.env['GITHUB_WORKSPACE']}/${allowedlistInput.replace(/.yml$/, ".yaml")}`
+
     if (!fs.existsSync(allowedlistFilePath)) {
-        allowedlistFilePath = `${process.env['GITHUB_WORKSPACE']}/.github/containerscan/allowedlist.yml`;
+        allowedlistFilePath = allowedlistFilePath.replace(/.yaml$/, ".yml")
         if (!fs.existsSync(allowedlistFilePath)) {
             console.log("Could not find allowedlist file.");
             return;

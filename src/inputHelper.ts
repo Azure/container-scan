@@ -6,6 +6,7 @@ export const username = core.getInput("username");
 export const password = core.getInput("password");
 export const severityThreshold = core.getInput("severity-threshold");
 export const runQualityChecks = core.getInput("run-quality-checks");
+export const allowedList = core.getInput("allowed-list");
 
 export function isRunQualityChecksEnabled(): boolean {
     return runQualityChecks.toLowerCase() === "true";

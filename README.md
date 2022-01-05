@@ -45,6 +45,11 @@ Please checkout [Trivy](https://github.com/aquasecurity/trivy/blob/main/LICENSE)
     <td>(Optional) Password to authenticate to the Docker registry. This is only required when you're trying to pull an image from your private registry</td>
     <td>''</td>
   </tr>
+  <tr>
+    <td><code>allowed-list</code></td>
+    <td>(Optional) File path for the allowedlist</td>
+    <td>.github/containerscan/allowedlist.yaml</td>
+  </tr>
 </table>
 
 ## Action output
@@ -95,7 +100,7 @@ Here is a sample scan report:
 ```
 
 ## Ignoring vulnerabilities
-In case you would like the action to ignore any vulnerabilities and best practice checks, create an allowedlist file at the path `.github/containerscan/allowedlist.yaml` in your repo. Here's an example allowedlist.yaml file.
+In case you would like the action to ignore any vulnerabilities and best practice checks, create an allowedlist file (default `.github/containerscan/allowedlist.yaml`) in your repo. Here's an example allowedlist.yaml file.
 
 ```yaml
 general:
