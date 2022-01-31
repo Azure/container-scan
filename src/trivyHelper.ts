@@ -41,11 +41,12 @@ export interface TrivyResult {
 
 export async function runTrivy(): Promise<TrivyResult> {
     const trivyPath = await getTrivy();
+    const trivyCommand = "image";
 
     const imageName = inputHelper.imageName;
     const trivyOptions: ExecOptions = await getTrivyExecOptions();
     console.log(`Scanning for vulnerabilties in image: ${imageName}`);
-    const trivyToolRunner = new ToolRunner(trivyPath, [imageName], trivyOptions);
+    const trivyToolRunner = new ToolRunner(trivyPath, [trivyCommand, imageName], trivyOptions);
     const timestamp = new Date().toISOString();
     const trivyStatus = await trivyToolRunner.exec();
     utils.addLogsToDebug(getTrivyLogPath());
