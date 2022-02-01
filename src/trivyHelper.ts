@@ -14,7 +14,7 @@ import * as allowedlistHandler from './allowedlistHandler';
 
 export const TRIVY_EXIT_CODE = 5;
 export const trivyToolName = "trivy";
-const stableTrivyVersion = "0.5.2";
+const stableTrivyVersion = "0.22.0";
 const trivyLatestReleaseUrl = "https://api.github.com/repos/aquasecurity/trivy/releases/latest";
 const KEY_TARGET = "Target";
 const KEY_VULNERABILITIES = "Vulnerabilities";
