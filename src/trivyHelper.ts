@@ -61,7 +61,7 @@ export async function runTrivy(): Promise<TrivyResult> {
 export async function getTrivy(): Promise<string> {
 
     let latestTrivyVersion = inputHelper.trivyVersion;
-    if(trivyVersion == 'latest'){
+    if(latestTrivyVersion == 'latest'){
         latestTrivyVersion = await getLatestTrivyVersion();
     }
     console.log(`Use Trivy version: ${latestTrivyVersion}` );
