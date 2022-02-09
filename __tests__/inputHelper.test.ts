@@ -13,6 +13,7 @@ describe('Validate inputs', () => {
                 'username': 'username',
                 'password': 'password',
                 'severity-threshold': 'HIGH',
+                'run-vuln-checks': 'true',
                 'run-quality-checks': 'true'
             }
             mockedCore.__setMockInputValues(__mockInputValues);
@@ -30,6 +31,7 @@ describe('Validate inputs', () => {
                 'username': 'username',
                 'password': 'password',
                 'severity-threshold': 'HIGH',
+                'run-vuln-checks': 'true',
                 'run-quality-checks': 'true'
             }
             mockedCore.__setMockInputValues(__mockInputValues);

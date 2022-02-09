@@ -8,20 +8,28 @@ import * as utils from './utils';
 export async function run(): Promise<void> {
     inputHelper.validateRequiredInputs();
     allowedlistHandler.init();
-    const trivyResult = await trivyHelper.runTrivy();
-    const trivyStatus = trivyResult.status;
 
-    if (trivyStatus === trivyHelper.TRIVY_EXIT_CODE) {
-        trivyHelper.printFormattedOutput();
-    } else if (trivyStatus === 0) {
-        console.log("No vulnerabilities were detected in the container image");
+    let trivyResult: trivyHelper.TrivyResult;
+    let trivyStatus: number;
+    if (inputHelper.isRunVulnChecksEnabled()) {
+        trivyResult = await trivyHelper.runTrivy();
+        trivyStatus = trivyResult.status;
+
+        if (trivyStatus === trivyHelper.TRIVY_EXIT_CODE) {
+            trivyHelper.printFormattedOutput();
+        } else if (trivyStatus === 0) {
+            console.log("No vulnerabilities were detected in the container image");
+        } else {
+            const errors = utils.extractErrorsFromLogs(trivyHelper.getTrivyLogPath(), trivyHelper.trivyToolName);
+
+            errors.forEach(err => {
+                core.error(err);
+            });
+            throw new Error(`An error occurred while scanning container image: ${inputHelper.imageName} for vulnerabilities.`);
+        }
     } else {
-        const errors = utils.extractErrorsFromLogs(trivyHelper.getTrivyLogPath(), trivyHelper.trivyToolName);
-
-        errors.forEach(err => {
-            core.error(err);
-        });
-        throw new Error(`An error occurred while scanning container image: ${inputHelper.imageName} for vulnerabilities.`);
+        const trivyStatus = 0;
+        console.log("Skipping vulnerability checks");
     }
 
     let dockleStatus: number;

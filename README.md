@@ -26,6 +26,11 @@ Please checkout [Trivy](https://github.com/aquasecurity/trivy/blob/main/LICENSE)
     <td>''</td>
   </tr>
   <tr>
+    <td><code>run-vuln-checks</code></td>
+    <td>(Optional) This is a boolean value. When set to `true`, Trivy is run over the container to check for vulnerabilities.</td>
+    <td>true</td>
+  </tr>
+  <tr>
     <td><code>severity-threshold</code></td>
     <td>(Optional) Minimum severity threshold set to control flagging of the vulnerabilities found during the scan. The available levels are: (UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL); if you set the severity-threshold to be `MEDIUM` every CVE found of a level higher than or equal to `MEDIUM` would be displayed</td>
     <td>HIGH</td>
