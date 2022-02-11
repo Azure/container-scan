@@ -7,7 +7,7 @@ import * as utils from './utils';
 
 export async function run(): Promise<void> {
     inputHelper.validateRequiredInputs();
-    allowedlistHandler.init();
+    allowedlistHandler.init(inputHelper.allowedList);
     const trivyResult = await trivyHelper.runTrivy();
     const trivyStatus = trivyResult.status;
 

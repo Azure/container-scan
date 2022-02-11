@@ -26,7 +26,7 @@ describe('Initialize allowedlist file', () => {
 
     test('No allowedlist file is given', () => {
         const allowedlistHandler = require('../src/allowedlistHandler');
-        expect(allowedlistHandler.init).not.toThrow();
+        expect(() => allowedlistHandler.init(".github/containerscan/allowedlist.yaml")).not.toThrow();
         expect(mockedFs.existsSync).not.toReturnWith(true);
         expect(mockedFs.existsSync).toHaveBeenCalledTimes(2);
     });
@@ -38,7 +38,7 @@ describe('Initialize allowedlist file', () => {
         
         mockedFs.__setMockFiles(mockFile);
         const allowedlistHandler = require('../src/allowedlistHandler');
-        expect(allowedlistHandler.init).not.toThrow();
+        expect(() => allowedlistHandler.init(".github/containerscan/allowedlist.yaml")).not.toThrow();
         expect(mockedFs.existsSync).toReturnWith(true);
         expect(mockedFs.existsSync).toHaveBeenCalledTimes(1);
         expect(mockedFs.writeFileSync).toHaveBeenCalledTimes(2);
@@ -50,7 +50,19 @@ describe('Initialize allowedlist file', () => {
         };
         mockedFs.__setMockFiles(mockFile);
         const allowedlistHandler = require('../src/allowedlistHandler');
-        expect(allowedlistHandler.init).not.toThrow();
+        expect(() => allowedlistHandler.init(".github/containerscan/allowedlist.yaml")).not.toThrow();
+        expect(mockedFs.existsSync).toReturnWith(true);
+        expect(mockedFs.existsSync).toHaveBeenCalledTimes(2);
+        expect(mockedFs.writeFileSync).toHaveBeenCalledTimes(2);
+    });
+
+    test('different file name is given', () => {
+        let mockFile = {
+            'test/.github/path/file.yml': '{general: {vulnerabilities: [CVE-2003-1307, CVE-2007-0086], bestPracticeViolations: [CIS-DI-0005, DKL-LI-0003]}}'
+        };
+        mockedFs.__setMockFiles(mockFile);
+        const allowedlistHandler = require('../src/allowedlistHandler');
+        expect(() => allowedlistHandler.init(".github/path/file.yaml")).not.toThrow();
         expect(mockedFs.existsSync).toReturnWith(true);
         expect(mockedFs.existsSync).toHaveBeenCalledTimes(2);
         expect(mockedFs.writeFileSync).toHaveBeenCalledTimes(2);
@@ -62,7 +74,7 @@ describe('Initialize allowedlist file', () => {
         };
         mockedFs.__setMockFiles(mockFile);
         const allowedlistHandler = require('../src/allowedlistHandler');
-        expect(allowedlistHandler.init).toThrow();
+        expect(() => allowedlistHandler.init(".github/containerscan/allowedlist.yaml")).toThrow();
         expect(mockedFs.writeFileSync).toHaveBeenCalledTimes(0);
     });
 
@@ -72,7 +84,7 @@ describe('Initialize allowedlist file', () => {
         };
         mockedFs.__setMockFiles(mockFile);
         const allowedlistHandler = require('../src/allowedlistHandler');
-        expect(allowedlistHandler.init).not.toThrow();
+        expect(() => allowedlistHandler.init(".github/containerscan/allowedlist.yaml")).not.toThrow();
         expect(mockedFs.writeFileSync).toHaveBeenCalledTimes(1);
     });
 });
