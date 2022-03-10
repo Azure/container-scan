@@ -15,7 +15,7 @@ import {trivyVersion} from "./inputHelper";
 
 export const TRIVY_EXIT_CODE = 5;
 export const trivyToolName = "trivy";
-const stableTrivyVersion = "0.5.2";
+const stableTrivyVersion = "0.22.0";
 const trivyLatestReleaseUrl = "https://api.github.com/repos/aquasecurity/trivy/releases/latest";
 const KEY_TARGET = "Target";
 const KEY_VULNERABILITIES = "Vulnerabilities";
@@ -42,12 +42,13 @@ export interface TrivyResult {
 
 export async function runTrivy(): Promise<TrivyResult> {
     const trivyPath = await getTrivy();
+    const trivyCommand = "image";
 
     const imageName = inputHelper.imageName;
 
     const trivyOptions: ExecOptions = await getTrivyExecOptions();
     console.log(`Scanning for vulnerabilties in image: ${imageName}`);
-    const trivyToolRunner = new ToolRunner(trivyPath, [imageName], trivyOptions);
+    const trivyToolRunner = new ToolRunner(trivyPath, [trivyCommand, imageName], trivyOptions);
     const timestamp = new Date().toISOString();
     const trivyStatus = await trivyToolRunner.exec();
     utils.addLogsToDebug(getTrivyLogPath());
