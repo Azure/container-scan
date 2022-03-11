@@ -65,7 +65,7 @@ export async function getTrivy(): Promise<string> {
     if(version == 'latest'){
         version = await getLatestTrivyVersion();
     }
-    console.log(`Use Trivy version: ${version}` );
+    core.debug(`Use Trivy version: ${version}`);
     let cachedToolPath = toolCache.find(trivyToolName, version);
     if (!cachedToolPath) {
         let trivyDownloadPath;
