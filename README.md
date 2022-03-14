@@ -44,7 +44,13 @@ Please checkout [Trivy](https://github.com/aquasecurity/trivy/blob/main/LICENSE)
     <td><code>password</code></td>
     <td>(Optional) Password to authenticate to the Docker registry. This is only required when you're trying to pull an image from your private registry</td>
     <td>''</td>
+  </tr>  
+  <tr>
+    <td><code>trivy-version</code></td>
+    <td>(Optional) Version of Trivy to run, e.g. 0.22.0. The default is to use latest version. </td>
+    <td>''</td>
   </tr>
+
 </table>
 
 ## Action output
