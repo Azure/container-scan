@@ -6,7 +6,8 @@ let __mockInputValues = {
     'username': 'username',
     'password': 'password',
     'severit-threshold': 'HIGH',
-    'run-quality-checks': 'true'
+    'run-quality-checks': 'true',
+    'trivy-version': 'latest'
 };
 
 function __setMockInputValues(mockObject) {

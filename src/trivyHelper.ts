@@ -11,7 +11,6 @@ import * as fileHelper from './fileHelper';
 import * as inputHelper from './inputHelper';
 import * as utils from './utils';
 import * as allowedlistHandler from './allowedlistHandler';
-import {trivyVersion} from "./inputHelper";
 
 export const TRIVY_EXIT_CODE = 5;
 export const trivyToolName = "trivy";
@@ -65,7 +64,7 @@ export async function getTrivy(): Promise<string> {
     if(version == 'latest'){
         version = await getLatestTrivyVersion();
     }
-    core.debug(`Use Trivy version: ${version}`);
+    core.debug(util.format('Use Trivy version: %s', version));
     let cachedToolPath = toolCache.find(trivyToolName, version);
     if (!cachedToolPath) {
         let trivyDownloadPath;
