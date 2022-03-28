@@ -44,6 +44,7 @@ export async function runTrivy(): Promise<TrivyResult> {
     const trivyCommand = "image";
 
     const imageName = inputHelper.imageName;
+
     const trivyOptions: ExecOptions = await getTrivyExecOptions();
     console.log(`Scanning for vulnerabilties in image: ${imageName}`);
     const trivyToolRunner = new ToolRunner(trivyPath, [trivyCommand, imageName], trivyOptions);
@@ -58,12 +59,16 @@ export async function runTrivy(): Promise<TrivyResult> {
 }
 
 export async function getTrivy(): Promise<string> {
-    const latestTrivyVersion = await getLatestTrivyVersion();
 
-    let cachedToolPath = toolCache.find(trivyToolName, latestTrivyVersion);
+    let version = inputHelper.trivyVersion;
+    if(version == 'latest'){
+        version = await getLatestTrivyVersion();
+    }
+    core.debug(util.format('Use Trivy version: %s', version));
+    let cachedToolPath = toolCache.find(trivyToolName, version);
     if (!cachedToolPath) {
         let trivyDownloadPath;
-        const trivyDownloadUrl = getTrivyDownloadUrl(latestTrivyVersion);
+        const trivyDownloadUrl = getTrivyDownloadUrl(version);
         const trivyDownloadDir = `${process.env['GITHUB_WORKSPACE']}/_temp/tools/trivy`;
         core.debug(util.format("Could not find trivy in cache, downloading from %s", trivyDownloadUrl));
 
@@ -74,7 +79,7 @@ export async function getTrivy(): Promise<string> {
         }
 
         const untarredTrivyPath = await toolCache.extractTar(trivyDownloadPath);
-        cachedToolPath = await toolCache.cacheDir(untarredTrivyPath, trivyToolName, latestTrivyVersion);
+        cachedToolPath = await toolCache.cacheDir(untarredTrivyPath, trivyToolName, version);
     }
 
     const trivyToolPath = cachedToolPath + "/" + trivyToolName;
