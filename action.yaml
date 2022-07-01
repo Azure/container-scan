@@ -22,6 +22,10 @@ inputs:
     description: 'Version of Trivy to run'
     default: 'latest'
     required: false
+  dockle-version:
+    description: 'Version of Dockle to run'
+    default: 'latest'
+    required: false
   run-quality-checks:
     description: 'Add additional checks to ensure the image is secure and follows best practices and CIS standards'
     default: 'true'

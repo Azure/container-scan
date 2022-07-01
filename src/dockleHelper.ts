@@ -46,11 +46,15 @@ export async function runDockle(): Promise<number> {
 }
 
 export async function getDockle(): Promise<string> {
-    const latestDockleVersion = await getLatestDockleVersion();
-    let cachedToolPath = toolCache.find(dockleToolName, latestDockleVersion);
+    let version = inputHelper.dockleVersion;
+    if(version == 'latest'){
+        version = await getLatestDockleVersion();
+    }
+    core.debug(util.format('Use Dockle version: %s', version));
+    let cachedToolPath = toolCache.find(dockleToolName, version);
     if (!cachedToolPath) {
         let dockleDownloadPath;
-        const dockleDownloadUrl = getDockleDownloadUrl(latestDockleVersion);
+        const dockleDownloadUrl = getDockleDownloadUrl(version);
         const dockleDownloadDir = `${process.env['GITHUB_WORKSPACE']}/_temp/tools/dockle`;
         core.debug(util.format("Could not find dockle in cache, downloading from %s", dockleDownloadUrl));
 
@@ -61,7 +65,7 @@ export async function getDockle(): Promise<string> {
         }
 
         const untarredDocklePath = await toolCache.extractTar(dockleDownloadPath);
-        cachedToolPath = await toolCache.cacheDir(untarredDocklePath, dockleToolName, latestDockleVersion);
+        cachedToolPath = await toolCache.cacheDir(untarredDocklePath, dockleToolName, version);
     }
 
     const dockleToolPath = cachedToolPath + "/" + dockleToolName;

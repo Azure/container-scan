@@ -2,10 +2,10 @@
 
 This action can be used to help you add some additional checks to help you secure your Docker Images in your  CI. This would help you attain some confidence in your docker image before pushing them to your container registry or a deployment.
 
-It internally uses `Trivy` and `Dockle` for running certain kinds of scans on these images. 
-- [`Trivy`](https://github.com/aquasecurity/trivy) helps you find the common vulnerabilities within your docker images. 
-- [`Dockle`](https://github.com/goodwithtech/dockle) is a container linter, which helps you identify if you haven't followed 
-  - Certain best practices while building the image 
+It internally uses `Trivy` and `Dockle` for running certain kinds of scans on these images.
+- [`Trivy`](https://github.com/aquasecurity/trivy) helps you find the common vulnerabilities within your docker images.
+- [`Dockle`](https://github.com/goodwithtech/dockle) is a container linter, which helps you identify if you haven't followed
+  - Certain best practices while building the image
   - [CIS Benchmarks](https://www.cisecurity.org/cis-benchmarks/) to secure your docker image
 
 Please checkout [Trivy](https://github.com/aquasecurity/trivy/blob/main/LICENSE) and [Dockle](https://github.com/goodwithtech/dockle/blob/master/LICENSE) licenses.
@@ -44,17 +44,22 @@ Please checkout [Trivy](https://github.com/aquasecurity/trivy/blob/main/LICENSE)
     <td><code>password</code></td>
     <td>(Optional) Password to authenticate to the Docker registry. This is only required when you're trying to pull an image from your private registry</td>
     <td>''</td>
-  </tr>  
+  </tr>
   <tr>
     <td><code>trivy-version</code></td>
     <td>(Optional) Version of Trivy to run, e.g. 0.22.0. The default is to use latest version. </td>
+    <td>''</td>
+  </tr>
+  <tr>
+    <td><code>dockle-version</code></td>
+    <td>(Optional) Version of Dockle to run, e.g. 0.2.4. The default is to use latest version. </td>
     <td>''</td>
   </tr>
 
 </table>
 
 ## Action output
-The action generates an output file consisting of detailed description of all the detected vulnerabilities and best practice violations in JSON format. This file can be accessed by using the output variable `scan-report-path`.  
+The action generates an output file consisting of detailed description of all the detected vulnerabilities and best practice violations in JSON format. This file can be accessed by using the output variable `scan-report-path`.
 Here is a sample scan report:
 ```json
 {
@@ -149,10 +154,10 @@ Install [Scanitizer](https://github.com/apps/scanitizer) (currently in Beta) on 
 
 ## End to end workflow using Azure
 
-The following is an example of not just this action, but how this action could be used along with other  actions to setup a CI. 
+The following is an example of not just this action, but how this action could be used along with other  actions to setup a CI.
 
 Where your CI would:
-- Build a docker image 
+- Build a docker image
 - Scan the docker image for any security vulnerabilities
 - Publish it to your private container registry.
 
@@ -166,25 +171,25 @@ jobs:
     - uses: actions/checkout@master
 
     - run: docker build . -t contoso.azurecr.io/k8sdemo:${{ github.sha }}
-      
+
     - uses: Azure/container-scan@v0
       with:
         image-name: contoso.azurecr.io/k8sdemo:${{ github.sha }}
-    
+
     - uses: Azure/docker-login@v1
       with:
         login-server: contoso.azurecr.io
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
-    
+
     - run: docker push contoso.azurecr.io/k8sdemo:${{ github.sha }}
 ```
 ## End to end workflow using any container repository and workflow environment variables
 
-The following is an example of not just this action, but how this action could be used along with other actions to setup a CI. 
+The following is an example of not just this action, but how this action could be used along with other actions to setup a CI.
 
 Where your CI would:
-- Build a docker image 
+- Build a docker image
 - Scan the docker image for any security vulnerabilities
 - Publish it to your preferred container registry.
 
@@ -200,17 +205,17 @@ jobs:
     - uses: actions/checkout@master
 
     - run: docker build . -t ${{ env.CONTAINER_REGISTRY }}/k8sdemo:${{ github.sha }}
-      
+
     - uses: Azure/container-scan@v0
       with:
         image-name: ${{ env.CONTAINER_REGISTRY }}/k8sdemo:${{ github.sha }}
-    
+
     - uses: Azure/docker-login@v1
       with:
         login-server: ${{ env.CONTAINER_REGISTRY }}
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
-    
+
     - run: docker push ${{ env.CONTAINER_REGISTRY }}/k8sdemo:${{ github.sha }}
 ```
 

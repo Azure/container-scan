@@ -7,7 +7,8 @@ let __mockInputValues = {
     'password': 'password',
     'severit-threshold': 'HIGH',
     'run-quality-checks': 'true',
-    'trivy-version': 'latest'
+    'trivy-version': 'latest',
+    'dockle-version': 'latest'
 };
 
 function __setMockInputValues(mockObject) {
