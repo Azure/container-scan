@@ -2,6 +2,7 @@ import * as core from '@actions/core';
 
 export const imageName = core.getInput("image-name");
 export const githubToken = core.getInput("token");
+export const timeout = core.getInput("timeout");
 export const username = core.getInput("username");
 export const password = core.getInput("password");
 export const trivyVersion = core.getInput("trivy-version");

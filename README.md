@@ -47,6 +47,11 @@ Please checkout [Trivy](https://github.com/aquasecurity/trivy/blob/main/LICENSE)
     <td>true</td>
   </tr>
   <tr>
+    <td><code>timeout</code></td>
+    <td>(Optional) Timeout in minutes for Trivy image scan.</td>
+    <td>''</td>
+  </tr>
+  <tr>
     <td><code>username</code></td>
     <td>(Optional) Username to authenticate to the Docker registry. This is only required when you're trying to pull an image from your private registry</td>
     <td>''</td>
