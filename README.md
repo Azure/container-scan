@@ -1,5 +1,16 @@
 # Container Scan
 
+## Deprecation Notice
+This project is no longer actively maintained, and has had some deficiencies for sometime now. If anyone is interested to implement the action logic on their own or fork the repo then feel free to do so. Adding few consise points below on what this action does, which might help others to replicate it.
+
+1. `Trivy` and `Dockle` are used internally for running certain kinds of scans on images.
+2. It accepts some necessary inputs that are passed to `Trivy`/`Dockle` to run cli commands.
+3. It allows users to update an allowedlist of vulnerabilities for the repo. So that the action doesn't shows up the allowed vulnerabilites on every run.
+4. For leveraging this feature the `scanitizer` app needs to be installed/integrated for consumption of appropriate APIs to update the allowedlist for the repo.
+
+This action may be archived in the future, but it will still be consumable in the workflows. Just that it won't be maintained in the future.
+
+## Overview
 This action can be used to help you add some additional checks to help you secure your Docker Images in your  CI. This would help you attain some confidence in your docker image before pushing them to your container registry or a deployment.
 
 It internally uses `Trivy` and `Dockle` for running certain kinds of scans on these images.
