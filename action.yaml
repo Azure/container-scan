@@ -34,5 +34,5 @@ outputs:
     description: 'URL of the check run. Overview about finding of vulnerabilities and best-practices.'
 
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'lib/main.js'

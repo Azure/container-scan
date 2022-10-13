@@ -24,5 +24,8 @@ fs.__setMockFiles = __setMockFiles;
 fs.readFileSync = jest.fn(readFileSync);
 fs.readFile = jest.fn(readFile);
 fs.existsSync = jest.fn(existsSync);
+fs.promises = {
+    access: jest.fn()
+}
 
 module.exports = fs;
